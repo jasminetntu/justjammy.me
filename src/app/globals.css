@@ -32,6 +32,21 @@ body {
   color: var(--color-ink);
 }
 
+/* kaomoji click sparkles fly out to the right and dissolve */
+@keyframes kao-spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.2) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1.15) rotate(var(--rot));
+  }
+}
+
 /* soft scrollbar to match the airy mood */
 ::-webkit-scrollbar {
   width: 9px;

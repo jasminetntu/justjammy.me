@@ -1,0 +1,21 @@
+import Link from "next/link";
+
+// on-brand 404 — also keeps unknown-route navigations inside the normal
+// router flow so the page cross-fade still runs
+export default function NotFound() {
+  return (
+    <main className="flex h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="font-serif text-[15px] italic uppercase tracking-[.3em] text-pink-deep">404</div>
+      <h1 className="font-script text-[clamp(44px,7vw,80px)] leading-none text-ink">wandered off the path</h1>
+      <p className="font-serif max-w-md text-lg italic text-ink-muted">
+        this page doesn&rsquo;t exist &mdash; maybe it bloomed somewhere else.
+      </p>
+      <Link
+        href="/"
+        className="font-serif mt-2 text-[17px] italic text-green-deep underline-offset-4 transition-colors hover:text-ink hover:underline"
+      >
+        back to the garden
+      </Link>
+    </main>
+  );
+}

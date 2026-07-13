@@ -1,7 +1,5 @@
-export default function Home() {
-  return (
-    <main className="flex flex-1 items-center justify-center">
-      <h1 className="text-2xl font-semibold">Jasmine Tu</h1>
-    </main>
-  );
+import { Garden } from "@/components/sections/garden";
+
+export default function HomePage() {
+  return <Garden />;
 }

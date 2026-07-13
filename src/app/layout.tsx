@@ -1,20 +1,35 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Hanken_Grotesk, Parisienne } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import { BackgroundCanvas } from "@/components/layout/background-canvas";
+import { FxProvider } from "@/components/layout/fx-provider";
+import { PageTransition } from "@/components/layout/page-transition";
+import { SiteHeader } from "@/components/layout/site-header";
+import { site } from "@/content/site";
+
+const parisienne = Parisienne({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-parisienne",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const cormorant = Cormorant_Garamond({
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
+  variable: "--font-cormorant",
+});
+
+const hanken = Hanken_Grotesk({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-hanken",
 });
 
 export const metadata: Metadata = {
-  title: "Jasmine Tu",
-  description: "Portfolio of Jasmine Tu.",
+  title: site.name,
+  description: site.description,
 };
 
 export default function RootLayout({
@@ -25,9 +40,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${parisienne.variable} ${cormorant.variable} ${hanken.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full bg-cream font-sans text-ink">
+        <FxProvider>
+          <BackgroundCanvas />
+          <SiteHeader />
+          <div className="relative z-10">
+            <PageTransition>{children}</PageTransition>
+          </div>
+        </FxProvider>
+      </body>
     </html>
   );
 }

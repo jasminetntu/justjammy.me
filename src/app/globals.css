@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* palette from the locked prototype — see src/lib/theme.ts for the TS mirror */
+@theme {
+  --color-cream: #f9f5f0;
+  --color-ink: #6b5343;
+  --color-ink-dark: #5a4636;
+  --color-ink-deep: #40382f;
+  --color-ink-muted: #9a7f6b;
+  --color-ink-label: #8a6f5c;
+  --color-ink-faint: #b8a898;
+  --color-pink: #e2a7c4;
+  --color-pink-mid: #dd8fb6;
+  --color-pink-deep: #c077a3;
+  --color-pink-soft: #c089ac;
+  --color-green: #a6c293;
+  --color-green-deep: #7fa06e;
+  --color-violet: #9a7bbf;
+  --color-violet-soft: #c0a9dd;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), serif;
+  --font-script: var(--font-parisienne), cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+/* soft scrollbar to match the airy mood */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(154, 127, 107, 0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }

@@ -1,7 +1,7 @@
 # Prototype → Site: Phased Build Plan
 
-> Last updated: 2026-07-13
-> Status: Phase 3 complete · Phase 4 next
+> Last updated: 2026-07-15
+> Status: Phase 4 complete · Phase 5 next
 > Companion to [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
@@ -67,11 +67,22 @@ chips, highlight cards. Added shared `PagePanel` (section-enter animation),
   tool, not a visitor feature). Each project declares one `layout` in metadata
   (`notes` implemented; `editorial`/`rail` to add if a future project needs one).
 
-### ⏳ Phase 4 — Design gallery + piece detail
-- `/design` — draggable infinite polaroid wall (momentum, cursor-parallax depth,
-  idle drift, data-driven boundary, hover straighten + caption) with a compact
-  masonry-grid toggle; medium filter chips; Instagram link.
-- `/design/[slug]` — piece detail with the same 3-layout toggle. Pieces from typed data.
+### ✅ Phase 4 — Design gallery + piece detail
+- `/design` — draggable polaroid wall (momentum, parallax depth, idle drift,
+  data-driven boundary, hover straighten + caption) with an `explore ⁄ compact`
+  toggle to a masonry grid; Instagram link. Pieces from typed data
+  (`src/content/design/`), placeholders for now.
+- `/design/[slug]` — piece detail (field-notes layout mirroring project detail),
+  static-generated per piece.
+- **Wall auto-layout:** positions are computed, not hand-placed — `layoutWall()`
+  (`src/lib/design-wall.ts`) scatters pieces center-outward via seeded rejection
+  sampling (deterministic, guaranteed non-overlapping, unit-tested). Adding a
+  piece needs no coordinates; an optional per-piece `place` override art-directs.
+- **Deviations from the original plan:**
+  - Dropped the piece-detail **3-layout toggle** — single `notes` layout, no MDX
+    (consistent with the Phase 3 project-detail call; a visitor page, not a
+    design-exploration tool).
+  - Removed the **medium filter chips** and simplified the wander hint (per user).
 
 ### ⏳ Phase 5 — Contact
 `/contact` — pink "say hello" letter: greeting cycles hello → hi → hey (each

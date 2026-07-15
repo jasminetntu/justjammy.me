@@ -1,7 +1,7 @@
 # Prototype → Site: Phased Build Plan
 
 > Last updated: 2026-07-13
-> Status: Phase 2 complete · Phase 3 next
+> Status: Phase 3 complete · Phase 4 next
 > Companion to [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
@@ -53,13 +53,19 @@ sparkle burst), bio with `**bold**`, portrait (real headshot wired), skill
 chips, highlight cards. Added shared `PagePanel` (section-enter animation),
 `BackLink`, and the `**bold**` emphasis parser.
 
-### ⏳ Phase 3 — Experience + project detail
+### ✅ Phase 3 — Experience + project detail
 - `/experience` — the "growing stem" vine timeline: one continuous gradient stem
   (green → pink → lavender), bloom medallions per section (Work / Leadership /
   Projects), entries as open ledger rows, staggered reveal, scroll-driven wash
-  shifts. Entries from typed data.
-- `/projects/[slug]` — case-study detail shell with the field-notes / editorial /
-  split-rail layout toggle; MDX-backed for real write-ups later.
+  shifts. Entries from typed data (`src/content/experience.ts`).
+- `/projects/[slug]` — field-notes case-study page, per-project data in
+  `src/content/projects/index.ts` + empty MDX body per project. **MDX pipeline
+  set up** (`@next/mdx`, `mdx-components.tsx`, `bodies.ts` import map).
+- 5 projects scaffolded (Before I Go, Blowfish Budgeting, Draftly, Murphy's Lab,
+  Where is Mr. Quack?) — awaiting real link URLs, images, and written prose.
+- **Deviation:** dropped the prototype's 3-layout *toggle* (a design-exploration
+  tool, not a visitor feature). Each project declares one `layout` in metadata
+  (`notes` implemented; `editorial`/`rail` to add if a future project needs one).
 
 ### ⏳ Phase 4 — Design gallery + piece detail
 - `/design` — draggable infinite polaroid wall (momentum, cursor-parallax depth,

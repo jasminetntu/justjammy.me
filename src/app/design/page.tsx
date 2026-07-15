@@ -1,8 +1,12 @@
-// stub — replaced in phase 4
+import type { Metadata } from "next";
+
+import { DesignGallery } from "@/components/sections/design-gallery";
+
+export const metadata: Metadata = {
+  title: "Design · Jasmine Tu",
+  description: "A wandering gallery of posters, portraits, and motion work by Jasmine Tu.",
+};
+
 export default function DesignPage() {
-  return (
-    <main className="flex h-dvh items-center justify-center">
-      <div className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-deep">design</div>
-    </main>
-  );
+  return <DesignGallery />;
 }

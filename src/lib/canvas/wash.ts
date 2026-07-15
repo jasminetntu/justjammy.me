@@ -58,6 +58,29 @@ export const WASH_SETS: Record<View, Wash> = {
   ],
 };
 
+// scroll-driven moods on /experience — the wash shifts green → pink → lavender
+// as each vine section crosses the viewport midpoint
+export const EXPERIENCE_ZONE_WASHES: Record<"work" | "leadership" | "projects", Wash> = {
+  work: [
+    [160, 190, 128, 0.22],
+    [221, 143, 182, 0.14],
+    [154, 123, 191, 0.14],
+    [160, 190, 128, 0.1],
+  ],
+  leadership: [
+    [233, 128, 176, 0.22],
+    [221, 143, 182, 0.14],
+    [160, 190, 128, 0.12],
+    [233, 128, 176, 0.14],
+  ],
+  projects: [
+    [154, 123, 191, 0.22],
+    [201, 174, 240, 0.14],
+    [233, 128, 176, 0.12],
+    [154, 123, 191, 0.14],
+  ],
+};
+
 export function cloneWash(w: Wash): Wash {
   return w.map((c) => [...c]) as Wash;
 }

@@ -1,8 +1,11 @@
-// stub — replaced in phase 3
+import type { Metadata } from "next";
+
+import { ExperienceVine } from "@/components/sections/experience-vine";
+
+export const metadata: Metadata = {
+  title: "Experience · Jasmine Tu",
+};
+
 export default function ExperiencePage() {
-  return (
-    <main className="flex h-dvh items-center justify-center">
-      <div className="font-serif text-[17px] italic uppercase tracking-[.18em] text-green-deep">experience</div>
-    </main>
-  );
+  return <ExperienceVine />;
 }

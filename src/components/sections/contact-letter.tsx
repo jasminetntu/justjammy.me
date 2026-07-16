@@ -48,8 +48,8 @@ export function ContactLetter() {
 
   return (
     <main className="flex min-h-dvh items-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
-      <PagePanel className="mx-auto w-full max-w-[940px]">
-        <div className="grid grid-cols-1 items-center gap-[clamp(38px,6vw,76px)] md:grid-cols-2">
+      <PagePanel className="mx-auto w-full max-w-[1080px]">
+        <div className="grid grid-cols-1 items-center gap-[clamp(19px,3vw,38px)] md:grid-cols-[1.25fr_.75fr]">
           {/* the letter */}
           <div className="text-left">
             <div className="mb-3.5">
@@ -71,7 +71,7 @@ export function ContactLetter() {
                 {GREETINGS[greetIndex]}
               </span>
             </h1>
-            <p className="font-serif m-0 mb-[clamp(26px,3vw,38px)] max-w-[430px] text-[clamp(18px,1.7vw,25px)] italic leading-[1.5] text-ink">
+            <p className="font-serif m-0 mb-[clamp(26px,3vw,38px)] text-[clamp(17px,1.5vw,22px)] italic leading-[1.5] text-ink">
               A role, a project, or just a hello — I&rsquo;d love to hear from you.
             </p>
             <div className="font-serif flex items-center gap-[9px] text-[17px] italic text-ink-muted">

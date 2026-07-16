@@ -1,7 +1,7 @@
 # Prototype → Site: Phased Build Plan
 
-> Last updated: 2026-07-15
-> Status: Phase 4 complete · Phase 5 next
+> Last updated: 2026-07-16
+> Status: Phase 5 complete · Phase 6 next
 > Companion to [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
@@ -84,10 +84,15 @@ chips, highlight cards. Added shared `PagePanel` (section-enter animation),
     design-exploration tool).
   - Removed the **medium filter chips** and simplified the wander hint (per user).
 
-### ⏳ Phase 5 — Contact
-`/contact` — pink "say hello" letter: greeting cycles hello → hi → hey (each
-click launches a shooting star), links bloom in staggered with draw-in
-underlines, email click-to-copy with a sparkle burst, resume PDF in `public/`.
+### ✅ Phase 5 — Contact
+`/contact` — pink-and-green "say hello" letter: greeting cycles
+hello → hi → chào → hola (each click launches a shooting star), links bloom in
+staggered with draw-in underlines, email click-to-copy with a sparkle burst.
+Two-column letter from typed `site.ts` (email/linkedin/github/resume + location).
+- **Resume:** links to `/jasmine-tu-resume.pdf` — 404s until the PDF is dropped
+  into `public/` (TODO noted in `site.ts`).
+- **Instagram** intentionally NOT here (kept exclusive to Design).
+- Backlog (not yet built): a greeting-cycle hint + other "fill the space" polish.
 
 ### ⏳ Phase 6 — Polish
 Per-route metadata, favicon / OG image, `README` + this doc + `ARCHITECTURE.md`

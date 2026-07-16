@@ -7,6 +7,9 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/jasminetntu/",
   github: "https://github.com/jasminetntu",
   instagram: "https://www.instagram.com/jammydoodlez",
+  // TODO(jasmine): drop the PDF at public/jasmine-tu-resume.pdf (404s until then)
+  resume: "/jasmine-tu-resume.pdf",
+  location: "based in San Jose & Irvine",
 } as const;
 
 // rotating subtitle on the home page (cross-fades every ~5.2s)

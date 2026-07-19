@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useFx } from "@/components/layout/fx-provider";
+import { BackLink } from "@/components/ui/back-link";
 import { FourPointStar } from "@/components/ui/four-point-star";
 import { pieces } from "@/content/design";
 import { clampCamAxis, computeWallBounds, layoutWall, type Placement } from "@/lib/design-wall";
@@ -72,7 +73,6 @@ export function DesignGallery() {
   }, [mode]);
 
   const wallRef = useRef<HTMLDivElement>(null);
-  const boundRef = useRef<HTMLDivElement>(null);
   const frames = useRef(new Map<string, HTMLElement>());
   const runtime = useRef(new Map<string, Runtime>());
 
@@ -156,10 +156,6 @@ export function DesignGallery() {
       }
       clampCam();
 
-      if (boundRef.current) {
-        boundRef.current.style.transform = `translate(-50%,-50%) translate(${bounds.cx + c.x}px,${bounds.cy + c.y}px)`;
-      }
-
       for (const l of layout) {
         const el = frames.current.get(l.piece.slug);
         const rt = runtime.current.get(l.piece.slug);
@@ -231,22 +227,6 @@ export function DesignGallery() {
         className="absolute inset-0 cursor-grab touch-none"
         style={{ display: mode === "wall" ? "block" : "none" }}
       >
-        {/* soft dashed gallery boundary — sits behind the pieces */}
-        <div
-          ref={boundRef}
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 rounded-[34px] border-[1.5px] border-dashed border-[rgba(201,127,166,.30)]"
-          style={{
-            zIndex: 0,
-            width: bounds.maxX - bounds.minX + BOUND_PAD * 2,
-            height: bounds.maxY - bounds.minY + BOUND_PAD * 2,
-            background:
-              "radial-gradient(130% 92% at 50% 0%, rgba(255,255,255,.16), rgba(255,255,255,0) 66%)",
-            boxShadow: "0 40px 120px rgba(154,90,120,.05)",
-            willChange: "transform",
-          }}
-        />
-
         {layout.map((l) => {
           const p = l.piece;
           return (
@@ -356,8 +336,9 @@ export function DesignGallery() {
         </div>
       )}
 
-      {/* eyebrow — top center */}
-      <div className="pointer-events-none absolute inset-x-0 top-[84px] z-[6] flex flex-col items-center">
+      {/* back + eyebrow — top left, below the header */}
+      <div className="pointer-events-none absolute left-[calc(clamp(22px,4vw,52px)+50px)] top-[110px] z-[6] flex flex-col items-start gap-2">
+        <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
         <div className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
         </div>

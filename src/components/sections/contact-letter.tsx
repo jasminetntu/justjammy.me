@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { useFx } from "@/components/layout/fx-provider";
 import { PagePanel } from "@/components/layout/page-panel";
@@ -11,6 +11,16 @@ import { ease } from "@/lib/theme";
 
 // the greeting cycles on click; each click also flings a shooting star
 const GREETINGS = ["hello", "hi", "chào", "hola"] as const;
+
+// soft blush → sage wash over cream that fills the whole page (from the contact
+// prototype). painted on the page backdrop (body) so the transparent canvas —
+// and the ribbon drawn on it — layer over it at full strength.
+const PAGE_GRADIENT = [
+  "radial-gradient(72% 52% at 26% 4%, rgba(233,128,176,.24), transparent 62%)",
+  "radial-gradient(58% 62% at 96% 56%, rgba(160,190,128,.34), transparent 62%)",
+  "radial-gradient(62% 60% at 4% 98%, rgba(160,190,128,.20), transparent 62%)",
+  "#f9f5f0",
+].join(",");
 
 interface LinkRow {
   label: string;
@@ -32,6 +42,17 @@ export function ContactLetter() {
 
   const [greetIndex, setGreetIndex] = useState(0);
   const [pop, setPop] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // paint the gradient on the page backdrop so the transparent background canvas
+  // (and the ribbon drawn on it) layer over it; restored when leaving the page
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = PAGE_GRADIENT;
+    return () => {
+      document.body.style.background = prev;
+    };
+  }, []);
 
   // release the click "pop" scale shortly after it fires
   useEffect(() => {
@@ -40,25 +61,37 @@ export function ContactLetter() {
     return () => clearTimeout(t);
   }, [pop]);
 
+  // revert the "copied" label after a moment
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 1500);
+    return () => clearTimeout(t);
+  }, [copied]);
+
   const cycleGreeting = () => {
     setGreetIndex((i) => (i + 1) % GREETINGS.length);
     setPop(true);
     launchShoot();
   };
 
+  const copyEmail = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    void navigator.clipboard?.writeText(site.email);
+    const r = e.currentTarget.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, "#e2a7c4", 16, "#ffffff");
+    setCopied(true);
+  };
+
   return (
-    <main className="flex min-h-dvh items-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
-      <PagePanel className="mx-auto w-full max-w-[1080px]">
-        <div className="grid grid-cols-1 items-center gap-[clamp(19px,3vw,38px)] md:grid-cols-[1.25fr_.75fr]">
-          {/* the letter */}
+    <main className="flex min-h-dvh items-center justify-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
+      <PagePanel className="w-full max-w-[1120px]">
+        <div className="grid grid-cols-1 items-end gap-[clamp(38px,6vw,76px)] md:[grid-template-columns:1.4fr_.6fr]">
+          {/* LEFT — the letter */}
           <div className="text-left">
-            <div className="mb-3.5">
+            <div className="mb-[18px]">
               <BackLink href="/" label="back" />
             </div>
-            <div className="font-serif mb-2.5 text-[16px] uppercase italic tracking-[.34em] text-pink-deep">
-              contact
-            </div>
-            <h1 className="font-script m-0 mb-[.3em] text-[clamp(58px,8vw,92px)] leading-[.92] text-ink">
+            <h1 className="font-script m-0 mb-[18px] text-[clamp(60px,8vw,92px)] leading-[.9] text-ink">
               say{" "}
               <span
                 onClick={cycleGreeting}
@@ -71,92 +104,76 @@ export function ContactLetter() {
                 {GREETINGS[greetIndex]}
               </span>
             </h1>
-            <p className="font-serif m-0 mb-[clamp(26px,3vw,38px)] text-[clamp(17px,1.5vw,22px)] italic leading-[1.5] text-ink">
+            <p className="font-serif m-0 mb-[26px] text-[clamp(18px,1.7vw,23px)] italic leading-[1.5] text-ink">
               A role, a project, or just a hello — I&rsquo;d love to hear from you.
             </p>
-            <div className="font-serif flex items-center gap-[9px] text-[17px] italic text-ink-muted">
+
+            {/* divider with a star nested in the line */}
+            <div className="mb-[26px] flex max-w-[360px] items-center gap-3">
+              <div
+                className="h-px flex-1"
+                style={{ background: "linear-gradient(90deg, rgba(226,167,196,.6), rgba(226,167,196,0))" }}
+              />
               <FourPointStar size={13} color="#e2a7c4" />
-              <span>{site.location}</span>
+              <div
+                className="h-px flex-[5]"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(226,167,196,0), rgba(226,167,196,.6), rgba(226,167,196,0))",
+                }}
+              />
+            </div>
+
+            {/* status pills */}
+            <div className="flex flex-wrap gap-2.5">
+              <span
+                className="font-serif inline-flex items-center rounded-full px-[15px] py-[7px] text-[15px] italic"
+                style={{ background: "rgba(226,167,196,.14)", color: "#9a7f6b" }}
+              >
+                {site.location}
+              </span>
+              <span
+                className="font-serif inline-flex items-center rounded-full px-[15px] py-[7px] text-[15px] italic"
+                style={{ background: "rgba(160,190,128,.16)", color: "#6f8a58" }}
+              >
+                {site.availability}
+              </span>
             </div>
           </div>
 
-          {/* the links */}
-          <div className="flex flex-col">
-            {LINKS.map((row, i) => (
-              <ContactRow key={row.label} row={row} index={i} burst={burst} />
+          {/* RIGHT — the links, a right-aligned label/value grid */}
+          <div className="ml-auto grid w-max items-baseline gap-x-[30px] gap-y-[14px] [grid-template-columns:auto_auto]">
+            {LINKS.map((row) => (
+              <Fragment key={row.label}>
+                <span className="font-serif text-right text-[16px] uppercase italic tracking-[.16em] text-pink-deep">
+                  {row.label}
+                </span>
+                <a
+                  href={row.href}
+                  onClick={row.copy ? copyEmail : undefined}
+                  title={row.copy ? "click to copy" : undefined}
+                  target={row.external ? "_blank" : undefined}
+                  rel={row.external ? "noopener noreferrer" : undefined}
+                  className="group text-right text-[17px] text-ink-dark transition-colors duration-300 hover:text-pink-deep"
+                >
+                  <span className="relative inline-block pb-[3px]">
+                    {row.copy && copied ? "copied ✦" : row.value}
+                    {/* gradient underline draws in from the left on hover */}
+                    <span
+                      aria-hidden
+                      className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, #efc3d9 0%, #efc3d9 40%, rgba(239,195,217,0) 100%)",
+                      }}
+                    />
+                  </span>
+                </a>
+              </Fragment>
             ))}
           </div>
         </div>
       </PagePanel>
     </main>
-  );
-}
-
-function ContactRow({
-  row,
-  index,
-  burst,
-}: {
-  row: LinkRow;
-  index: number;
-  burst: (x: number, y: number, col: string, n?: number, col2?: string) => void;
-}) {
-  const [shown, setShown] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  // staggered bloom-in on mount (mirrors the prototype's revealContact)
-  useEffect(() => {
-    let inner = 0;
-    const outer = requestAnimationFrame(() => {
-      inner = requestAnimationFrame(() => setShown(true));
-    });
-    return () => {
-      cancelAnimationFrame(outer);
-      cancelAnimationFrame(inner);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!copied) return;
-    const t = setTimeout(() => setCopied(false), 1500);
-    return () => clearTimeout(t);
-  }, [copied]);
-
-  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!row.copy) return;
-    e.preventDefault();
-    void navigator.clipboard?.writeText(site.email);
-    const r = e.currentTarget.getBoundingClientRect();
-    burst(r.left + r.width / 2, r.top + r.height / 2, "#e2a7c4", 16, "#ffffff");
-    setCopied(true);
-  };
-
-  return (
-    <div
-      style={{
-        opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(14px)",
-        transition: `opacity .7s ease ${index * 110}ms, transform .7s ${ease.soft} ${index * 110}ms`,
-      }}
-    >
-      <a
-        href={row.href}
-        onClick={onClick}
-        title={row.copy ? "click to copy" : undefined}
-        target={row.external ? "_blank" : undefined}
-        rel={row.external ? "noopener noreferrer" : undefined}
-        className="group relative flex items-baseline justify-between gap-5 border-b border-[rgba(107,83,67,.14)] px-0.5 py-[19px] no-underline transition-transform duration-500 hover:-translate-y-[3px]"
-        style={{ transitionTimingFunction: ease.soft }}
-      >
-        <span className="font-serif text-[16px] uppercase italic tracking-[.16em] text-pink-deep">
-          {row.label}
-        </span>
-        <span className="text-[clamp(15px,1.3vw,17px)] text-ink-dark">
-          {copied ? "copied ✦" : row.value}
-        </span>
-        {/* underline draws in from the left on hover */}
-        <span className="absolute -bottom-px left-0 h-[1.5px] w-full origin-left scale-x-0 bg-pink transition-transform duration-500 group-hover:scale-x-100" />
-      </a>
-    </div>
   );
 }

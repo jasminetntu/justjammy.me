@@ -39,10 +39,11 @@ export const WASH_SETS: Record<View, Wash> = {
     [233, 128, 176, 0.08],
   ],
   contact: [
-    [233, 128, 176, 0.24], // pink — still blush-led (top center)
-    [160, 190, 128, 0.28], // green — stronger (right)
-    [176, 150, 224, 0.1], // violet tinge (bottom-left)
-    [160, 190, 128, 0.2], // green — was pink (top-left)
+    // kept faint: the page gradient carries the color, the ribbon drifts over it
+    [233, 128, 176, 0.06],
+    [160, 190, 128, 0.07],
+    [176, 150, 224, 0.03],
+    [160, 190, 128, 0.05],
   ],
   project: [
     [176, 150, 224, 0.24],

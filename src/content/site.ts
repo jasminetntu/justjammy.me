@@ -9,7 +9,8 @@ export const site = {
   instagram: "https://www.instagram.com/jammydoodlez",
   // TODO(jasmine): drop the PDF at public/jasmine-tu-resume.pdf (404s until then)
   resume: "/jasmine-tu-resume.pdf",
-  location: "based in San Jose & Irvine",
+  location: "San Jose & Irvine",
+  availability: "Open to internships",
 } as const;
 
 // rotating subtitle on the home page (cross-fades every ~5.2s)

@@ -10,7 +10,7 @@ export const site = {
   // TODO(jasmine): drop the PDF at public/jasmine-tu-resume.pdf (404s until then)
   resume: "/jasmine-tu-resume.pdf",
   location: "San Jose & Irvine",
-  availability: "Open to internships",
+  availability: "Open to internships & flexible roles",
 } as const;
 
 // rotating subtitle on the home page (cross-fades every ~5.2s)

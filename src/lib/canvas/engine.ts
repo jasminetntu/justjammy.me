@@ -150,8 +150,8 @@ export class FxEngine {
       x.fillRect(0, 0, W, H);
     });
 
-    // ribbon fades out where it would fight the content (experience vine, design wall)
-    const ribTgt = this.view === "experience" || this.view === "design" ? 0 : 1;
+    // ribbon fades out where it would fight the content (the full-bleed design wall)
+    const ribTgt = this.view === "design" ? 0 : 1;
     this.ribbonAlpha += (ribTgt - this.ribbonAlpha) * 0.04;
     if (this.ribbonAlpha > 0.01) drawRibbon(x, t, W, H, this.ribbonAlpha, this.pointer.ny);
 

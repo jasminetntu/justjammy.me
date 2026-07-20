@@ -8,7 +8,14 @@ import { useFx } from "@/components/layout/fx-provider";
 import { BackLink } from "@/components/ui/back-link";
 import { FourPointStar } from "@/components/ui/four-point-star";
 import { EXPERIENCE_ZONE_WASHES } from "@/lib/canvas/wash";
-import { currently, projectsSection, timeline, type TimelineSection } from "@/content/experience";
+import {
+  certifications,
+  currently,
+  projectsSection,
+  skills,
+  timeline,
+  type TimelineSection,
+} from "@/content/experience";
 import { featuredProjects, type ProjectMeta } from "@/content/projects";
 import { ease } from "@/lib/theme";
 
@@ -57,55 +64,113 @@ function Reveal({
   );
 }
 
-// the "growing stem": one vine threads top→bottom, each section headed by a
-// bloom medallion, entries hanging off as open ledger rows (no cards).
+// two-column layout: a fixed identity sidebar (back · title · currently · skills ·
+// featured projects) + a scrolling "growing stem" timeline on the right.
 export function ExperienceVine() {
   const projects = featuredProjects();
-  useScrollWash();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useScrollWash(scrollRef);
 
   return (
-    <main className="relative mx-auto w-full max-w-[700px] px-[clamp(24px,5vw,40px)] pb-24 pt-[118px]">
-      {/* header */}
-      <Reveal className="mb-10">
-        <div className="mb-4">
+    <main className="fixed inset-0 flex overflow-hidden">
+      {/* ── SIDEBAR ── */}
+      <aside
+        className="flex h-full flex-col overflow-y-auto border-r border-[rgba(154,127,107,.14)] bg-white/30 px-[clamp(28px,3vw,40px)] pb-9 pt-[76px] backdrop-blur-[3px]"
+        style={{ flex: "0 0 clamp(356px,35vw,476px)" }}
+      >
+        <div className="mb-2.5 mt-2">
           <BackLink className="text-[#8a9a7e]" />
         </div>
-        <h1 className="font-serif m-0 text-center text-[clamp(34px,4.6vw,50px)] font-medium leading-none text-[#46603a]">
-          Experience
+        <h1 className="font-serif m-0 mb-[14px] text-[17px] font-medium uppercase italic leading-none tracking-[.18em] text-[#93a06f]">
+          experience
         </h1>
-        <div className="mt-[17px] flex items-center justify-center gap-[9px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-deep shadow-[0_0_0_4px_rgba(127,160,110,.16)]" />
-          <span className="font-serif text-[17px] italic text-[#5d6b50]">Currently — {currently}</span>
+        <div className="flex items-center gap-2.5">
+          <FourPointStar size={15} color="#8ea36c" style={{ filter: "none" }} />
+          <span className="font-serif text-[16px] italic leading-[1.3] text-[#6f6a54]">
+            Currently — {currently}
+          </span>
         </div>
-      </Reveal>
 
-      {/* the vine */}
-      <div className="relative">
-        {timeline.map((section, si) => (
-          <VineSection key={section.key} section={section} prevColor={si === 0 ? null : timeline[si - 1].bloom} />
-        ))}
+        <div className="my-[22px] shrink-0 border-t border-[rgba(154,127,107,.18)]" />
 
-        {/* projects bloom */}
-        <div data-zone="projects">
-          <SectionHeader
-            label={projectsSection.label}
-            bloom={projectsSection.bloom}
-            heading={projectsSection.heading}
-            fromColor={timeline[timeline.length - 1].bloom}
-            toTransparent
-          >
-            {projects.length === 0 ? (
-              <Reveal className="mt-5">
-                <span className="font-serif text-[15px] italic text-[#a493c6]">case studies blooming soon ✦</span>
-              </Reveal>
-            ) : (
-              <Reveal className="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2" delay={0.1}>
-                {projects.map((p, i) => (
-                  <ProjectCard key={p.slug} project={p} index={i} />
-                ))}
-              </Reveal>
-            )}
-          </SectionHeader>
+        {/* skills ledger */}
+        <div className="font-serif mb-2 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
+          Skills
+        </div>
+        <div>
+          {skills.map((s) => (
+            <div key={s.category} className="flex gap-4 py-2">
+              <div className="font-serif flex-[0_0_92px] text-[15px] italic leading-[1.3] text-[#a89a86]">
+                {s.category}
+              </div>
+              <div className="flex-1 text-[13px] leading-[1.5] text-ink-dark">{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* certifications */}
+        <div className="my-[22px] shrink-0 border-t border-[rgba(154,127,107,.18)]" />
+        <div className="font-serif mb-3 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
+          Certifications
+        </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+          {certifications.map((c) => (
+            <a
+              key={c.name}
+              href={c.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block"
+            >
+              <div className="text-[13.5px] font-medium leading-snug text-ink-dark transition-colors group-hover:text-green-deep">
+                {c.name}
+              </div>
+              <div className="font-serif text-[12.5px] italic text-[#a89a86]">
+                {c.issuer} · {c.date}
+              </div>
+            </a>
+          ))}
+        </div>
+
+      </aside>
+
+      {/* ── TIMELINE ── */}
+      <div ref={scrollRef} className="relative h-full min-w-0 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[720px] px-[clamp(24px,4vw,52px)] pb-24 pt-[112px]">
+          <div className="relative">
+            {timeline.map((section, si) => (
+              <VineSection
+                key={section.key}
+                section={section}
+                prevColor={si === 0 ? null : timeline[si - 1].bloom}
+              />
+            ))}
+
+            {/* projects bloom */}
+            <div data-zone="projects">
+              <SectionHeader
+                label={projectsSection.label}
+                bloom={projectsSection.bloom}
+                heading={projectsSection.heading}
+                fromColor={timeline[timeline.length - 1].bloom}
+                toTransparent
+              >
+                {projects.length === 0 ? (
+                  <Reveal className="mt-5">
+                    <span className="font-serif text-[15px] italic text-[#a493c6]">
+                      case studies blooming soon ✦
+                    </span>
+                  </Reveal>
+                ) : (
+                  <Reveal className="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2" delay={0.1}>
+                    {projects.map((p, i) => (
+                      <ProjectCard key={p.slug} project={p} index={i} />
+                    ))}
+                  </Reveal>
+                )}
+              </SectionHeader>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -116,10 +181,17 @@ function VineSection({ section, prevColor }: { section: TimelineSection; prevCol
   return (
     <section data-zone={section.key}>
       <SectionHeader label={section.label} bloom={section.bloom} heading={section.heading} fromColor={prevColor} />
-      {section.entries.map((entry, i) => (
+      {section.entries.map((entry, i) => {
+        const isLast = i === section.entries.length - 1;
+        const tint = stemTint(section.bloom);
+        return (
         <Reveal key={`${entry.org}-${entry.role}`} className="relative flex gap-[26px]" delay={i * 0.09}>
           <Rail>
-            <div className="absolute bottom-0 left-1/2 top-0 w-0.5 -translate-x-1/2" style={{ background: stemTint(section.bloom) }} />
+            {/* the last entry's stem fades out, so sections read as separate blooms */}
+            <div
+              className="absolute bottom-0 left-1/2 top-0 w-0.5 -translate-x-1/2"
+              style={{ background: isLast ? `linear-gradient(${tint} 0%, ${tint} 42%, transparent 100%)` : tint }}
+            />
             <span className="absolute left-1/2 top-[14px] z-[2] h-[15px] w-[15px] -translate-x-1/2">
               <FourPointStar size={15} color={section.bloom} style={{ filter: "none" }} />
             </span>
@@ -137,7 +209,8 @@ function VineSection({ section, prevColor }: { section: TimelineSection; prevCol
             <p className="m-0 text-[14px] leading-[1.68] text-[#6c5e51]">{entry.blurb}</p>
           </div>
         </Reveal>
-      ))}
+        );
+      })}
     </section>
   );
 }
@@ -234,23 +307,20 @@ function SectionHeader({
   const continuing = fromColor !== null;
   const bloomTop = continuing ? 22 : 0;
 
-  // stem uses the light tint colors (matching the entry lines) so there's no
-  // light→dark step where a section starts; the hue change runs BEHIND the
-  // medallion [bloomTop → bloomTop+44] so no band shows around the circle.
-  const tintFrom = fromColor ? stemTint(fromColor) : stemTint(bloom);
-  const tintTo = stemTint(bloom);
+  // stem is solid below the medallion (no incoming line above it) — the soft
+  // break between sections comes from the previous section's last entry fading
+  // out. the final (projects) stem fades out at the bottom.
+  const tint = stemTint(bloom);
   const line = toTransparent
-    ? `linear-gradient(${tintFrom} 0px, ${tintFrom} ${bloomTop}px, ${tintTo} ${bloomTop + 44}px, rgba(154,123,191,0) 100%)`
-    : fromColor
-      ? `linear-gradient(${tintFrom} 0px, ${tintFrom} ${bloomTop}px, ${tintTo} ${bloomTop + 44}px)`
-      : tintTo;
+    ? `linear-gradient(${tint} 0px, ${tint} ${bloomTop + 56}px, rgba(154,123,191,0) 100%)`
+    : tint;
 
   return (
     <Reveal className="relative flex gap-[26px]">
       <Rail>
         <div
           className="absolute left-1/2 w-0.5 -translate-x-1/2"
-          style={{ top: fromColor ? 0 : 24, bottom: toTransparent ? 34 : 0, background: line }}
+          style={{ top: continuing ? bloomTop : 24, bottom: toTransparent ? 34 : 0, background: line }}
         />
         <span
           className="absolute left-1/2 z-[2] flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full"
@@ -281,33 +351,35 @@ function stemTint(bloom: string): string {
   return tints[bloom] ?? bloom;
 }
 
-// shift the background wash as sections scroll past the viewport midpoint
-function useScrollWash() {
+// shift the background wash as sections scroll past the timeline's midpoint
+function useScrollWash(scrollRef: React.RefObject<HTMLElement | null>) {
   const { setWashOverride } = useFx();
   const current = useRef<string | null>(null);
 
   useEffect(() => {
-    const zones = Array.from(document.querySelectorAll<HTMLElement>("[data-zone]"));
+    const el = scrollRef.current;
+    if (!el) return;
+    const zones = Array.from(el.querySelectorAll<HTMLElement>("[data-zone]"));
     const compute = () => {
-      const mid = window.scrollY + window.innerHeight * 0.5;
+      // midpoint of the visible timeline, in viewport coords
+      const mid = el.getBoundingClientRect().top + el.clientHeight * 0.5;
       let active: keyof typeof EXPERIENCE_ZONE_WASHES = "work";
       for (const z of zones) {
-        if (z.offsetTop <= mid) active = z.dataset.zone as keyof typeof EXPERIENCE_ZONE_WASHES;
+        if (z.getBoundingClientRect().top <= mid) active = z.dataset.zone as keyof typeof EXPERIENCE_ZONE_WASHES;
         else break;
       }
-      // once the projects bloom is near, tip into its lavender mood
       if (current.current !== active) {
         current.current = active;
         setWashOverride(EXPERIENCE_ZONE_WASHES[active]);
       }
     };
     compute();
-    window.addEventListener("scroll", compute, { passive: true });
+    el.addEventListener("scroll", compute, { passive: true });
     window.addEventListener("resize", compute);
     return () => {
-      window.removeEventListener("scroll", compute);
+      el.removeEventListener("scroll", compute);
       window.removeEventListener("resize", compute);
       setWashOverride(null);
     };
-  }, [setWashOverride]);
+  }, [scrollRef, setWashOverride]);
 }

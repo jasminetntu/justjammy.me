@@ -21,6 +21,45 @@ export interface TimelineSection {
 
 export const currently = "Computer Science @ UC Irvine";
 
+// sidebar skills ledger — from Jasmine's resume + the stacks she used at
+// NVIDIA and Google Cloud.
+export interface SkillGroup {
+  category: string;
+  value: string;
+}
+
+export const skills: SkillGroup[] = [
+  { category: "Languages", value: "Python · Java · JavaScript/TypeScript · SQL · HTML / CSS" },
+  { category: "Frameworks", value: "React · Next.js · Node · FastAPI · LangGraph" },
+  { category: "AI & Cloud", value: "Google Cloud · Google ADK · LLMs (RAG, BM25) · Pandas" },
+  { category: "Infrastructure", value: "Docker · Kubernetes · Redis · SQLite · REST APIs · OAuth" },
+  { category: "Design", value: "Figma · Photoshop · Procreate · UI / UX" },
+  { category: "Tools & Engines", value: "Git · Cursor · VS Code · IntelliJ · Unity · GameMaker" },
+  { category: "Professional", value: "Leadership · Mentorship · Fast Learner · Collaboration · Bilingual (EN/VI)" },
+];
+
+export interface Certification {
+  name: string;
+  issuer: string;
+  date: string;
+  href: string; // Credly badge
+}
+
+export const certifications: Certification[] = [
+  {
+    name: "Cloud Digital Leader",
+    issuer: "Google Cloud",
+    date: "Jul 2025 – Jul 2028",
+    href: "https://www.credly.com/badges/aa1418b2-44f7-41ed-9165-6220b9000842/public_url",
+  },
+  {
+    name: "Professional Scrum Master I",
+    issuer: "Scrum.org",
+    date: "Jan 2026",
+    href: "https://www.credly.com/badges/3e74bf1d-a780-4210-8ede-2bc149e066ee/public_url",
+  },
+];
+
 export const timeline: TimelineSection[] = [
   {
     key: "work",

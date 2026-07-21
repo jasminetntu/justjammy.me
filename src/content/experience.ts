@@ -19,7 +19,7 @@ export interface TimelineSection {
   entries: TimelineEntry[];
 }
 
-export const currently = "Computer Science @ UC Irvine";
+export const currently = "C.S. @ UC Irvine";
 
 // sidebar skills ledger — from Jasmine's resume + the stacks she used at
 // NVIDIA and Google Cloud.

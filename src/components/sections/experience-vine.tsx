@@ -69,13 +69,18 @@ function Reveal({
 export function ExperienceVine() {
   const projects = featuredProjects();
   const scrollRef = useRef<HTMLDivElement>(null);
+  // mobile-only: skills + certs collapse so the work timeline surfaces first
+  const [skillsOpen, setSkillsOpen] = useState(false);
   useScrollWash(scrollRef);
 
   return (
-    <main className="fixed inset-0 flex overflow-hidden">
+    // desktop: fixed two-column (scroll-independent sidebar + timeline).
+    // mobile: normal document flow — sidebar stacks on top, timeline below,
+    // the whole page scrolls as one.
+    <main className="min-h-dvh md:fixed md:inset-0 md:flex md:overflow-hidden">
       {/* ── SIDEBAR ── */}
       <aside
-        className="flex h-full flex-col overflow-y-auto border-r border-[rgba(154,127,107,.14)] bg-white/30 px-[clamp(28px,3vw,40px)] pb-9 pt-[76px] backdrop-blur-[3px]"
+        className="flex flex-col bg-[linear-gradient(to_bottom,rgba(255,255,255,.32)_72%,rgba(255,255,255,0))] px-[clamp(28px,3vw,40px)] pb-6 pt-[92px] md:h-full md:overflow-y-auto md:border-r md:border-[rgba(154,127,107,.14)] md:bg-white/30 md:bg-none md:pb-9 md:pt-[76px] md:backdrop-blur-[3px]"
         style={{ flex: "0 0 clamp(356px,35vw,476px)" }}
       >
         <div className="mb-2.5 mt-2">
@@ -85,58 +90,98 @@ export function ExperienceVine() {
           experience
         </h1>
         <div className="flex items-center gap-2.5">
-          <FourPointStar size={15} color="#8ea36c" style={{ filter: "none" }} />
+          {/* star on desktop only — on mobile "Currently" reads as a plain subtitle */}
+          <span className="hidden md:inline-flex">
+            <FourPointStar size={15} color="#8ea36c" style={{ filter: "none" }} />
+          </span>
           <span className="font-serif text-[16px] italic leading-[1.3] text-[#6f6a54]">
             Currently — {currently}
           </span>
         </div>
 
-        <div className="my-[22px] shrink-0 border-t border-[rgba(154,127,107,.18)]" />
+        {/* divider only on desktop — on mobile the toggle row's own underline is
+            the single separator (avoids doubled-up lines) */}
+        <div className="my-[22px] hidden shrink-0 border-t border-[rgba(154,127,107,.18)] md:block" />
 
-        {/* skills ledger */}
-        <div className="font-serif mb-2 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
-          Skills
-        </div>
-        <div>
-          {skills.map((s) => (
-            <div key={s.category} className="flex gap-4 py-2">
-              <div className="font-serif flex-[0_0_92px] text-[15px] italic leading-[1.3] text-[#a89a86]">
-                {s.category}
-              </div>
-              <div className="flex-1 text-[13px] leading-[1.5] text-ink-dark">{s.value}</div>
-            </div>
-          ))}
-        </div>
+        {/* mobile-only toggle — collapses skills + certs so the work timeline
+            (NVIDIA / Google) surfaces first. flat editorial row: label + a
+            four-point star that spins open. the whole row is the tap target.
+            hidden on desktop, where the sidebar shows everything expanded */}
+        <button
+          type="button"
+          onClick={() => setSkillsOpen((o) => !o)}
+          aria-expanded={skillsOpen}
+          className="mt-[22px] flex w-full items-center gap-2.5 border-b border-[rgba(154,127,107,.18)] pb-3 md:hidden"
+        >
+          <FourPointStar
+            size={15}
+            color="#8ea36c"
+            className="shrink-0 transition-transform duration-500 ease-out"
+            style={{ transform: skillsOpen ? "rotate(45deg) scale(1.12)" : "rotate(0deg)" }}
+          />
+          <span className="font-serif text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
+            Skills &amp; Certifications
+          </span>
+        </button>
 
-        {/* certifications */}
-        <div className="my-[22px] shrink-0 border-t border-[rgba(154,127,107,.18)]" />
-        <div className="font-serif mb-3 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
-          Certifications
-        </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-          {certifications.map((c) => (
-            <a
-              key={c.name}
-              href={c.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block"
-            >
-              <div className="text-[13.5px] font-medium leading-snug text-ink-dark transition-colors group-hover:text-green-deep">
-                {c.name}
+        {/* collapsible on mobile (animated height + fade); always open on desktop.
+            grid-rows 0fr→1fr animates to the content's natural height */}
+        <div
+          className={`grid transition-[grid-template-rows] duration-500 ease-out md:grid-rows-[1fr] ${
+            skillsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div
+            className={`min-h-0 overflow-hidden pt-5 transition-opacity duration-500 ease-out md:pt-0 md:opacity-100 ${
+              skillsOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+          {/* skills ledger */}
+          <div className="font-serif mb-2 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
+            Skills
+          </div>
+          <div>
+            {skills.map((s) => (
+              <div key={s.category} className="flex gap-4 py-2">
+                <div className="font-serif flex-[0_0_92px] text-[15px] italic leading-[1.3] text-[#a89a86]">
+                  {s.category}
+                </div>
+                <div className="flex-1 text-[13px] leading-[1.5] text-ink-dark">{s.value}</div>
               </div>
-              <div className="font-serif text-[12.5px] italic text-[#a89a86]">
-                {c.issuer} · {c.date}
-              </div>
-            </a>
-          ))}
+            ))}
+          </div>
+
+          {/* certifications */}
+          <div className="my-[22px] shrink-0 border-t border-[rgba(154,127,107,.18)]" />
+          <div className="font-serif mb-3 text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
+            Certifications
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+            {certifications.map((c) => (
+              <a
+                key={c.name}
+                href={c.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block"
+              >
+                <div className="text-[13.5px] font-medium leading-snug text-ink-dark transition-colors group-hover:text-green-deep">
+                  {c.name}
+                </div>
+                <div className="font-serif text-[12.5px] italic text-[#a89a86]">
+                  {c.issuer} · {c.date}
+                </div>
+              </a>
+            ))}
+          </div>
+          </div>
         </div>
 
       </aside>
 
       {/* ── TIMELINE ── */}
-      <div ref={scrollRef} className="relative h-full min-w-0 flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-[720px] px-[clamp(24px,4vw,52px)] pb-24 pt-[112px]">
+      <div ref={scrollRef} className="relative min-w-0 md:h-full md:flex-1 md:overflow-y-auto">
+        <div className="mx-auto max-w-[720px] px-[clamp(24px,4vw,52px)] pb-24 pt-6 md:pt-[112px]">
           <div className="relative">
             {timeline.map((section, si) => (
               <VineSection
@@ -361,8 +406,9 @@ function useScrollWash(scrollRef: React.RefObject<HTMLElement | null>) {
     if (!el) return;
     const zones = Array.from(el.querySelectorAll<HTMLElement>("[data-zone]"));
     const compute = () => {
-      // midpoint of the visible timeline, in viewport coords
-      const mid = el.getBoundingClientRect().top + el.clientHeight * 0.5;
+      // viewport midpoint — works whether the timeline scrolls in its own
+      // container (desktop) or the whole page scrolls (mobile stacked layout)
+      const mid = window.innerHeight * 0.5;
       let active: keyof typeof EXPERIENCE_ZONE_WASHES = "work";
       for (const z of zones) {
         if (z.getBoundingClientRect().top <= mid) active = z.dataset.zone as keyof typeof EXPERIENCE_ZONE_WASHES;
@@ -375,9 +421,11 @@ function useScrollWash(scrollRef: React.RefObject<HTMLElement | null>) {
     };
     compute();
     el.addEventListener("scroll", compute, { passive: true });
+    window.addEventListener("scroll", compute, { passive: true });
     window.addEventListener("resize", compute);
     return () => {
       el.removeEventListener("scroll", compute);
+      window.removeEventListener("scroll", compute);
       window.removeEventListener("resize", compute);
       setWashOverride(null);
     };

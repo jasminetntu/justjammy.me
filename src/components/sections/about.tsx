@@ -3,6 +3,7 @@ import Image from "next/image";
 import { PagePanel } from "@/components/layout/page-panel";
 import { Kaomoji } from "@/components/sections/kaomoji";
 import { BackLink } from "@/components/ui/back-link";
+import { FourPointStar } from "@/components/ui/four-point-star";
 import { about } from "@/content/about";
 import { parseEmphasis } from "@/lib/emphasis";
 
@@ -38,22 +39,15 @@ export function About() {
         </div>
         <div className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-soft">about</div>
 
-        <div className="mt-[18px] grid grid-cols-1 items-start gap-[clamp(28px,5vw,64px)] md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
-          <div>
-            <h2 className="font-serif mb-[.5em] text-[clamp(30px,4vw,52px)] font-medium leading-[1.08] text-ink-dark">
-              Hello! <Kaomoji />
-            </h2>
-            {about.paragraphs.map((p, i) => (
-              <p
-                key={i}
-                className={`text-[clamp(15px,1.4vw,18px)] leading-[1.75] text-ink ${i < about.paragraphs.length - 1 ? "mb-[1.1em]" : ""}`}
-              >
-                <Emphasized text={p} />
-              </p>
-            ))}
-          </div>
+        {/* explicit grid placement so desktop stays two-column (Hello + text on
+            the left, portrait on the right), while mobile flows in a custom
+            order: portrait + badges → Hello → description text */}
+        <div className="mt-[18px] grid grid-cols-1 items-start gap-x-[clamp(28px,5vw,64px)] md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+          <h2 className="font-serif order-2 mb-[.5em] text-[clamp(30px,4vw,52px)] font-medium leading-[1.08] text-ink-dark md:col-start-1 md:row-start-1">
+            Hello! <Kaomoji />
+          </h2>
 
-          <div>
+          <div className="order-1 mb-8 md:order-none md:col-start-2 md:row-span-2 md:row-start-1 md:mb-0">
             <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-[200px_200px_18px_18px] border border-[rgba(154,127,107,.18)] bg-gradient-to-br from-[#fbe7f0] to-[#eef4e6] shadow-[0_18px_50px_rgba(154,127,107,.18)]">
               {about.portrait ? (
                 <Image
@@ -83,18 +77,36 @@ export function About() {
               ))}
             </div>
           </div>
+
+          <div className="order-3 md:col-start-1 md:row-start-2">
+            {about.paragraphs.map((p, i) => (
+              <p
+                key={i}
+                className={`text-[clamp(15px,1.4vw,18px)] leading-[1.75] text-ink ${i < about.paragraphs.length - 1 ? "mb-[1.1em]" : ""}`}
+              >
+                <Emphasized text={p} />
+              </p>
+            ))}
+          </div>
         </div>
 
         <div className="mt-[46px] border-t border-[rgba(154,127,107,.18)] pt-[30px]">
-          <div className="font-serif mb-4 text-[18px] italic text-ink-muted">Highlights</div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3.5">
-            {about.highlights.map((h) => (
+          <div className="font-serif mb-6 text-[18px] italic text-ink-muted">Highlights</div>
+          {/* star + label stacks — centered columns on desktop, star-left rows
+              on mobile; stars alternate pink / green by position */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-8 md:grid-cols-4 md:gap-x-6">
+            {about.highlights.map((h, i) => (
               <div
                 key={h.title}
-                className="rounded-[14px] border border-[rgba(154,127,107,.14)] bg-white/50 px-[18px] py-4"
+                className="flex items-center gap-3 md:flex-col md:gap-2.5 md:text-center"
               >
-                <div className="text-[16px] font-semibold text-ink-dark">{h.title}</div>
-                <div className="text-[13px] text-ink-muted">{h.detail}</div>
+                <FourPointStar size={20} color={i % 2 === 0 ? "#c089ac" : "#8ea36c"} />
+                <div>
+                  <div className="text-[15px] font-semibold leading-tight text-ink-dark md:text-[16px]">
+                    {h.title}
+                  </div>
+                  <div className="mt-1 text-[13px] leading-snug text-ink-muted">{h.detail}</div>
+                </div>
               </div>
             ))}
           </div>

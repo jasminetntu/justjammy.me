@@ -28,7 +28,12 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: site.name,
+  // child pages set just their name (e.g. "About"); Next appends the suffix.
+  // pages that need a standalone title can use `title: { absolute: "…" }`.
+  title: {
+    default: site.name,
+    template: `%s · ${site.name}`,
+  },
   description: site.description,
 };
 

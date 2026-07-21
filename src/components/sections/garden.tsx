@@ -69,6 +69,9 @@ function GardenStars() {
   const { engine, burst } = useFx();
   const wrapRefs = useRef<(HTMLElement | null)[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
+  // touch devices have no hover — a tap briefly marks the star "active" so it
+  // flashes its color + does the little turn while the page fades out
+  const [tapped, setTapped] = useState<number | null>(null);
 
   useEffect(() => {
     // idle drift + cursor parallax, eased toward each star's corner anchor
@@ -118,7 +121,7 @@ function GardenStars() {
   return (
     <>
       {gardenNodes.map((node, i) => {
-        const isHover = hovered === i;
+        const active = hovered === i || tapped === i;
         return (
           <Link
             key={node.key}
@@ -132,26 +135,31 @@ function GardenStars() {
             onClick={(e) => {
               const r = e.currentTarget.getBoundingClientRect();
               burst(r.left + r.width / 2, r.top + 18, node.color, 20, "#ffffff");
+              // on touch (no hover) flash the star as the page cross-fades away
+              if (typeof matchMedia === "function" && matchMedia("(hover: none)").matches) {
+                setTapped(i);
+                setTimeout(() => setTapped((t) => (t === i ? null : t)), 900);
+              }
             }}
           >
             <span
               className="flex justify-center"
               style={{
-                transform: isHover ? "scale(1.28) rotate(6deg)" : undefined,
+                transform: active ? "scale(1.28) rotate(6deg)" : undefined,
                 transition: `transform 1.2s ${ease.soft}`,
               }}
             >
               <FourPointStar
                 size={26}
-                color={isHover ? node.color : "#ffffff"}
+                color={active ? node.color : "#ffffff"}
                 style={{ filter: "drop-shadow(0 0 5px rgba(255,255,255,.9))" }}
               />
             </span>
             <span
               className="font-serif mt-2 block text-[21px] italic tracking-[.02em]"
               style={{
-                color: isHover ? "#6b5343" : "#8a6f5c",
-                transform: isHover ? "translateY(2px)" : undefined,
+                color: active ? "#6b5343" : "#8a6f5c",
+                transform: active ? "translateY(2px)" : undefined,
                 transition: `color .8s ease, transform .9s ${ease.soft}`,
               }}
             >

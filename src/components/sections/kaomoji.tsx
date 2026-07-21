@@ -21,6 +21,8 @@ interface KaoSpark {
 // makes little text sparkles fly out from the hand
 export function Kaomoji() {
   const [sparks, setSparks] = useState<KaoSpark[]>([]);
+  // desktop turns pink on hover; on mobile a tap flashes it pink for a beat
+  const [flash, setFlash] = useState(false);
   const nextId = useRef(0);
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -30,6 +32,8 @@ export function Kaomoji() {
   }, []);
 
   const burst = () => {
+    setFlash(true);
+    timeouts.current.push(setTimeout(() => setFlash(false), 450));
     const born: KaoSpark[] = Array.from({ length: SPARKS_PER_CLICK }, (_, i) => ({
       id: nextId.current++,
       glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
@@ -47,7 +51,8 @@ export function Kaomoji() {
 
   return (
     <span
-      className="relative cursor-pointer text-ink-dark transition-colors duration-[350ms] hover:text-pink-deep"
+      data-flash={flash}
+      className="relative cursor-pointer text-ink-dark transition-colors duration-[350ms] md:hover:text-pink-deep max-md:data-[flash=true]:text-pink-deep"
       onClick={burst}
     >
       (^

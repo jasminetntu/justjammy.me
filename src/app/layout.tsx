@@ -6,7 +6,7 @@ import { BackgroundCanvas } from "@/components/layout/background-canvas";
 import { FxProvider } from "@/components/layout/fx-provider";
 import { PageTransition } from "@/components/layout/page-transition";
 import { SiteHeader } from "@/components/layout/site-header";
-import { site } from "@/content/site";
+import { site, siteUrl } from "@/content/site";
 
 const parisienne = Parisienne({
   weight: "400",
@@ -28,6 +28,8 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
+  // absolute base for share images + canonical/sitemap URLs
+  metadataBase: new URL(siteUrl),
   // child pages set just their name (e.g. "About"); Next appends the suffix.
   // pages that need a standalone title can use `title: { absolute: "…" }`.
   title: {
@@ -35,6 +37,16 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.description,
+  // og/twitter title + description flow from each page's title/description;
+  // the branded card comes from app/opengraph-image.tsx + twitter-image.tsx
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

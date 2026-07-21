@@ -95,7 +95,10 @@ export function ContactLetter() {
               say{" "}
               <span
                 onClick={cycleGreeting}
-                className="inline-block cursor-pointer transition-[color,transform] duration-300 hover:text-pink"
+                data-pop={pop}
+                // desktop: hover turns it pink. mobile (no hover): a tap flashes
+                // it pink for a beat via the click "pop" state.
+                className="inline-block cursor-pointer transition-[color,transform] duration-300 md:hover:text-pink max-md:data-[pop=true]:text-pink"
                 style={{
                   transform: pop ? "scale(1.12)" : "scale(1)",
                   transitionTimingFunction: ease.soft,
@@ -142,10 +145,10 @@ export function ContactLetter() {
           </div>
 
           {/* RIGHT — the links, a right-aligned label/value grid */}
-          <div className="ml-auto grid w-max items-baseline gap-x-[30px] gap-y-[14px] [grid-template-columns:auto_auto]">
+          <div className="grid w-max items-baseline gap-x-5 gap-y-[14px] [grid-template-columns:auto_auto] md:ml-auto md:gap-x-[30px]">
             {LINKS.map((row) => (
               <Fragment key={row.label}>
-                <span className="font-serif text-right text-[16px] uppercase italic tracking-[.16em] text-pink-deep">
+                <span className="font-serif text-left text-[14px] uppercase italic tracking-[.16em] text-pink-deep md:text-right md:text-[16px]">
                   {row.label}
                 </span>
                 <a
@@ -154,7 +157,7 @@ export function ContactLetter() {
                   title={row.copy ? "click to copy" : undefined}
                   target={row.external ? "_blank" : undefined}
                   rel={row.external ? "noopener noreferrer" : undefined}
-                  className="group text-right text-[17px] text-ink-dark transition-colors duration-300 hover:text-pink-deep"
+                  className="group text-left text-[15px] text-ink-dark transition-colors duration-300 hover:text-pink-deep md:text-right md:text-[17px]"
                 >
                   <span className="relative inline-block pb-[3px]">
                     {row.copy && copied ? "copied ✦" : row.value}

@@ -66,6 +66,26 @@ export function DesignGallery() {
 
   const [mode, setMode] = useState<"wall" | "grid">("wall");
 
+  // "drag to wander" hint — shown only until the first real drag, and never
+  // again once the user has dragged before (persisted across visits)
+  const [showHint, setShowHint] = useState(false);
+  const hintDismissed = useRef(false);
+  useEffect(() => {
+    let draggedBefore = false;
+    try {
+      draggedBefore = localStorage.getItem("design-wall-dragged") === "1";
+    } catch {
+      // localStorage unavailable (private mode, etc.) — just show the hint
+    }
+    if (draggedBefore) {
+      hintDismissed.current = true;
+      return;
+    }
+    // defer the state flip out of the effect body (lint: no sync setState)
+    const id = requestAnimationFrame(() => setShowHint(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   // refs the rAF loop reads without re-subscribing
   const modeRef = useRef(mode);
   useEffect(() => {
@@ -187,6 +207,16 @@ export function DesignGallery() {
       camV.current = reduce ? { x: 0, y: 0 } : { x: dx, y: dy };
       dragDist.current += Math.abs(dx) + Math.abs(dy);
       last.current = { x: e.clientX, y: e.clientY };
+      // first real drag → retire the hint for good
+      if (dragDist.current > DRAG_SLOP && !hintDismissed.current) {
+        hintDismissed.current = true;
+        setShowHint(false);
+        try {
+          localStorage.setItem("design-wall-dragged", "1");
+        } catch {
+          // ignore — persistence is best-effort
+        }
+      }
     };
     const onUp = () => {
       if (!dragging.current) return;
@@ -290,54 +320,49 @@ export function DesignGallery() {
       {/* GRID — editorial masonry, three columns */}
       {mode === "grid" && (
         <div className="absolute inset-0 z-[1] overflow-y-auto">
-          <div className="mx-auto max-w-[1180px] px-[clamp(24px,5vw,60px)] pb-[100px] pt-[172px]">
-            <div className="flex items-start gap-6">
-              {[0, 1, 2].map((col) => (
-                <div key={col} className="flex flex-1 flex-col">
-                  {pieces
-                    .filter((_, i) => i % 3 === col)
-                    .map((p) => {
-                      return (
-                        <Link
-                          key={p.slug}
-                          href={`/design/${p.slug}`}
-                          onClick={(e) => {
-                            burst(e.clientX, e.clientY, "#dd8fb6", 14, "#ffffff");
-                          }}
-                          className="group relative mb-6 block cursor-pointer overflow-hidden rounded-[14px] shadow-[0_8px_24px_rgba(154,90,120,.12)] transition-[transform,box-shadow] duration-500 hover:-translate-y-[5px] hover:shadow-[0_18px_42px_rgba(154,90,120,.22)]"
-                        >
-                          <div
-                            className="relative w-full"
-                            style={{ height: p.gridHeight, background: p.image ? undefined : p.gradient }}
-                          >
-                            {p.image && (
-                              <Image
-                                src={p.image.src}
-                                alt={p.image.alt}
-                                fill
-                                sizes="(max-width:768px) 100vw, 380px"
-                                className="object-cover"
-                              />
-                            )}
-                          </div>
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(90,40,60,.46)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100">
-                            <div className="font-serif text-[20px] text-white">{p.title}</div>
-                            <div className="font-serif text-[13px] italic text-white/85">
-                              {p.medium} · {p.year}
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                </div>
+          <div className="mx-auto max-w-[1180px] px-[clamp(24px,5vw,60px)] pb-[100px] pt-[132px] md:pt-[172px]">
+            {/* css multi-column masonry — 2 cols on phones, 3 on wider screens */}
+            <div className="columns-2 gap-6 md:columns-3">
+              {pieces.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/design/${p.slug}`}
+                  onClick={(e) => {
+                    burst(e.clientX, e.clientY, "#dd8fb6", 14, "#ffffff");
+                  }}
+                  className="group relative mb-6 block cursor-pointer overflow-hidden break-inside-avoid rounded-[14px] shadow-[0_8px_24px_rgba(154,90,120,.12)] transition-[transform,box-shadow] duration-500 hover:-translate-y-[5px] hover:shadow-[0_18px_42px_rgba(154,90,120,.22)]"
+                >
+                  <div
+                    className="relative w-full"
+                    style={{ height: p.gridHeight, background: p.image ? undefined : p.gradient }}
+                  >
+                    {p.image && (
+                      <Image
+                        src={p.image.src}
+                        alt={p.image.alt}
+                        fill
+                        sizes="(max-width:768px) 50vw, 380px"
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(90,40,60,.46)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100">
+                    <div className="font-serif text-[20px] text-white">{p.title}</div>
+                    <div className="font-serif text-[13px] italic text-white/85">
+                      {p.medium} · {p.year}
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* back + eyebrow — top left, below the header */}
-      <div className="pointer-events-none absolute left-[calc(clamp(22px,4vw,52px)+50px)] top-[110px] z-[6] flex flex-col items-start gap-2">
+      {/* back + eyebrow — top left, below the header. on mobile it lines up
+          with the page edge (matching the about page's left padding); on desktop
+          it shifts right to clear the J monogram */}
+      <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-[110px] z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
         <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
         <div className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
@@ -351,9 +376,13 @@ export function DesignGallery() {
         <ModeButton label="compact" active={mode === "grid"} onClick={() => setMode("grid")} />
       </div>
 
-      {/* wander hint — only meaningful on the wall */}
+      {/* wander hint — only on the wall; fades out on the first drag (and in
+          on load), so it never blinks away abruptly */}
       {mode === "wall" && (
-        <div className="font-serif pointer-events-none absolute bottom-[74px] left-1/2 z-[5] -translate-x-1/2 whitespace-nowrap text-[14.5px] italic text-[#c189a6]">
+        <div
+          className="font-serif pointer-events-none absolute bottom-[74px] left-1/2 z-[5] -translate-x-1/2 whitespace-nowrap text-[14.5px] italic text-[#c189a6] transition-opacity duration-700 ease-out"
+          style={{ opacity: showHint ? 1 : 0 }}
+        >
           drag to wander
         </div>
       )}

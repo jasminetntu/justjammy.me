@@ -68,7 +68,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.pink,
     size: { w: 240, h: 316 },
-    gridHeight: 300,
+    gridHeight: 210,
   },
   {
     slug: "piece-2",
@@ -79,7 +79,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.pink2,
     size: { w: 240, h: 316 },
-    gridHeight: 230,
+    gridHeight: 175,
   },
   {
     slug: "piece-3",
@@ -90,7 +90,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.pink,
     size: { w: 240, h: 316 },
-    gridHeight: 280,
+    gridHeight: 195,
   },
   {
     slug: "piece-4",
@@ -101,7 +101,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.portrait,
     size: { w: 258, h: 318 },
-    gridHeight: 320,
+    gridHeight: 225,
   },
   {
     slug: "piece-5",
@@ -112,7 +112,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.portrait2,
     size: { w: 258, h: 318 },
-    gridHeight: 250,
+    gridHeight: 185,
   },
   {
     slug: "piece-6",
@@ -123,7 +123,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.portrait,
     size: { w: 258, h: 318 },
-    gridHeight: 300,
+    gridHeight: 205,
   },
   {
     slug: "piece-7",
@@ -134,7 +134,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.web,
     size: { w: 384, h: 240 },
-    gridHeight: 210,
+    gridHeight: 165,
   },
   {
     slug: "piece-8",
@@ -145,7 +145,7 @@ export const pieces: DesignPiece[] = [
     blurb: BLURB,
     gradient: G.motion,
     size: { w: 288, h: 288 },
-    gridHeight: 240,
+    gridHeight: 185,
   },
 ];
 

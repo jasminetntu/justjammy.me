@@ -4,8 +4,8 @@ import { pieces } from "@/content/design";
 import { projects } from "@/content/projects";
 import { siteUrl } from "@/content/site";
 
-// generated at build — new design pieces / projects appear automatically since
-// this reads the same content arrays the pages do. absolute URLs via siteUrl.
+// generated at build — reads the same content arrays as the pages, so new
+// design pieces / projects appear automatically; absolute URLs via siteUrl
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 

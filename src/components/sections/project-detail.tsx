@@ -7,9 +7,9 @@ import type { ProjectImage, ProjectMeta } from "@/content/projects";
 
 const POLAROID_ROTATIONS = [3, -2.5, 2, -3];
 
-// field-notes layout: reads like a sketchbook page — warm, annotated, with
-// images taped in like polaroids. most projects have 0 or 1 image, but the
-// gallery handles any number. the MDX case study renders as `Body`.
+// field-notes layout — reads like a sketchbook page: warm, annotated, images
+// taped in like polaroids; most projects have 0 or 1 image but the gallery
+// handles any number, MDX case study renders as `Body`
 export function ProjectDetail({ meta, Body }: { meta: ProjectMeta; Body: ComponentType }) {
   const images = meta.images ?? [];
   const [headerImage, ...restImages] = images;

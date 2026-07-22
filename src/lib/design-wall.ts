@@ -1,6 +1,6 @@
-// pure geometry for the draggable design wall — split out from the canvas/DOM so
-// the layout + boundary + drag-clamp math can be unit-tested in isolation
-// (mirrors the pure/shell split in src/lib/canvas/).
+// pure geometry for the draggable design wall — split from canvas/DOM so layout +
+// boundary + drag-clamp math is unit-testable in isolation (mirrors the pure/shell
+// split in src/lib/canvas/)
 
 export interface WallItem {
   x: number; // resting offset from wall center
@@ -22,7 +22,7 @@ export interface WallBounds {
 const HALF_MARGIN_X = 30;
 const HALF_MARGIN_Y = 36;
 
-// derive the gallery extent from the pieces, so it grows as pieces are added
+// derive gallery extent from pieces, so it grows as pieces are added
 export function computeWallBounds(items: WallItem[]): WallBounds {
   if (items.length === 0) {
     return { minX: 0, maxX: 0, minY: 0, maxY: 0, cx: 0, cy: 0 };
@@ -42,8 +42,8 @@ export function computeWallBounds(items: WallItem[]): WallBounds {
   return { minX, maxX, minY, maxY, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
 }
 
-// clamp a camera offset so the drag stops `pad` px past the gallery extent. when
-// the extent is smaller than the viewport on an axis, it locks to centered.
+// clamp camera offset so drag stops `pad` px past the gallery extent;
+// smaller-than-viewport axis locks to centered
 export function clampCamAxis(
   value: number,
   min: number,
@@ -85,15 +85,15 @@ export interface Placement {
   depth: number;
 }
 
-// min edge-to-edge gap between two pieces. Y is roomier so the hover caption
-// (which drops below a piece) never lands on the neighbor beneath it.
+// min edge-to-edge gap between pieces; Y roomier so the hover caption (drops
+// below a piece) clears the neighbor beneath
 const GAP_X = 58;
 const GAP_Y = 84;
 const MAX_TILT = 4; // ±deg of resting tilt
-const LAYOUT_SEED = 20260715; // fixed so the scatter is stable across reloads
+const LAYOUT_SEED = 20260715; // fixed so scatter is stable across reloads
 
-// tiny deterministic PRNG (mulberry32) — same seed → same scatter every time,
-// which keeps the layout stable and unit-testable (no Math.random anywhere)
+// tiny deterministic PRNG (mulberry32) — same seed → same scatter, keeping
+// layout stable + unit-testable (no Math.random)
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -104,8 +104,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-// two rectangles (centered at their x/y) clear each other if there's a big enough
-// gap on either axis
+// two rectangles (centered at x/y) clear if there's enough gap on either axis
 function clears(
   ax: number,
   ay: number,
@@ -121,12 +120,11 @@ function clears(
   );
 }
 
-// Place pieces center-outward: the biggest piece anchors the middle, then each
-// piece searches from radius 0 outward and takes the SMALLEST radius (at a random
-// angle) that clears everything placed so far. This keeps a dense, centered
-// cluster instead of an even spray — pieces only push outward when the middle is
-// full, and the random angle keeps it organic rather than a rigid ring. Manual
-// `place` overrides win outright. Deterministic (seeded), so it's stable + testable.
+// place pieces center-outward: biggest anchors the middle, then each takes the
+// smallest radius (random angle) that clears all placed so far — dense centered
+// cluster, not an even spray; pieces push outward only when the middle is full,
+// random angle keeps it organic not a rigid ring. manual `place` overrides win
+// outright; deterministic (seeded), so stable + testable
 const RADIUS_STEP = 22; // px granularity of the outward search
 
 export function layoutWall(items: LayoutInput[]): Map<string, Placement> {
@@ -136,7 +134,7 @@ export function layoutWall(items: LayoutInput[]): Map<string, Placement> {
   const rand = mulberry32(LAYOUT_SEED);
   const placed: Array<{ x: number; y: number; w: number; h: number }> = [];
 
-  // an upper bound on how far out we ever need to look, ~proportional to footprint
+  // upper bound on outward search distance, ~proportional to footprint
   const footprint = items.reduce((s, it) => s + (it.width + GAP_X) * (it.height + GAP_Y), 0);
   const maxRadius = Math.sqrt(footprint) * 1.2;
 
@@ -147,7 +145,7 @@ export function layoutWall(items: LayoutInput[]): Map<string, Placement> {
     const tilt = it.place?.rot ?? (rand() * 2 - 1) * MAX_TILT;
     const depth = it.place?.depth ?? 0.9 + rand() * 0.2;
 
-    // a fully-pinned override skips the search entirely
+    // fully-pinned override skips the search
     if (it.place?.x != null && it.place?.y != null) {
       out.set(it.slug, { x: it.place.x, y: it.place.y, rot: tilt, depth });
       placed.push({ x: it.place.x, y: it.place.y, w: it.width, h: it.height });
@@ -156,7 +154,7 @@ export function layoutWall(items: LayoutInput[]): Map<string, Placement> {
 
     let best: { x: number; y: number } | null = null;
     for (let r = 0; r <= maxRadius && !best; r += RADIUS_STEP) {
-      // sample more angles as the ring grows, so the search stays dense
+      // sample more angles as the ring grows, keeping the search dense
       const tries = r === 0 ? 1 : Math.max(10, Math.round((2 * Math.PI * r) / RADIUS_STEP));
       for (let k = 0; k < tries; k++) {
         const ang = rand() * Math.PI * 2;

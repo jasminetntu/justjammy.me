@@ -1,2 +1,2 @@
-// twitter card reuses the same branded card as the opengraph image
+// Twitter card reuses the branded card from the opengraph image
 export { default, alt, size, contentType } from "./opengraph-image";

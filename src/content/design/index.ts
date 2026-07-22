@@ -1,9 +1,9 @@
-// design-piece registry — one typed entry per piece. the polaroid wall, the
-// masonry grid, and the wall boundary all read this array, so adding a piece =
-// one entry here (no component edits, no hand-placed coordinates).
+// design-piece registry — one typed entry per piece; the polaroid wall, masonry
+// grid, and wall boundary all read this array, so adding a piece = one entry here
+// (no component edits, no hand-placed coordinates).
 //
 // pieces are placeholders for now (gradient fills, generic titles); swap in real
-// @jammydoodlez artwork later by giving an entry an `image` + real copy.
+// @jammydoodlez artwork later via an entry's `image` + real copy
 
 import type { PiecePlacement } from "@/lib/design-wall";
 
@@ -29,7 +29,7 @@ export interface DesignPiece {
   category: DesignCategory; // filter key
   blurb: string; // one-line intro shown on the detail page
   description?: string; // longer prose for the detail page (typed, no MDX)
-  gradient: string; // fallback fill until real art is dropped in
+  gradient: string; // fallback fill until real art lands
   image?: DesignImage; // real artwork, when available
   links?: DesignLink[];
 
@@ -38,8 +38,8 @@ export interface DesignPiece {
   gridHeight: number; // tile height in the masonry grid (px)
 
   // wall placement is AUTO by default — layoutWall() scatters pieces with
-  // guaranteed spacing, so a new piece needs no coordinates. Set `place` to
-  // art-direct a specific piece; any field you omit still auto-resolves.
+  // guaranteed spacing, so a new piece needs no coordinates; set `place` to
+  // art-direct one, any omitted field still auto-resolves
   place?: PiecePlacement;
 }
 
@@ -53,10 +53,10 @@ const G = {
   motion: "linear-gradient(150deg,#f2d6ec,#cdb4e6)",
 } as const;
 
-// placeholders — neutral "title / type / year" text until real pieces land.
-// TODO(jasmine): fill in real title/medium/year/blurb per piece + add `image`
-// (art under /public/images/design/<slug>/) and any `links`. positions are auto,
-// so a new piece just needs `size` + `gridHeight` (no coordinates).
+// placeholders — neutral "title / type / year" text until real pieces land
+// TODO(jasmine): fill real title/medium/year/blurb per piece + `image`
+// (art under /public/images/design/<slug>/) and any `links`; positions auto,
+// so a new piece needs only `size` + `gridHeight` (no coordinates).
 const BLURB = "A short description of this piece.";
 export const pieces: DesignPiece[] = [
   {
@@ -153,8 +153,8 @@ export function getPiece(slug: string): DesignPiece | undefined {
   return pieces.find((p) => p.slug === slug);
 }
 
-// filter options, derived from the pieces that actually exist (order preserved),
-// so the chip bar stays in sync with the data.
+// filter options derived from existing pieces (order preserved),
+// so the chip bar stays in sync with the data
 export function pieceCategories(): Array<"all" | DesignCategory> {
   const seen: DesignCategory[] = [];
   for (const p of pieces) {

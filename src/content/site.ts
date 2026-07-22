@@ -1,8 +1,8 @@
 // site-wide content — edit here, the components pick it up
 
-// canonical origin for absolute URLs (share images, sitemap). resolves an
-// explicit override first, then the Vercel deploy URL, then a placeholder.
-// TODO(jasmine): set NEXT_PUBLIC_SITE_URL (or edit the fallback) to the real domain.
+// canonical origin for absolute URLs (share images, sitemap); resolves an
+// explicit override first, then the Vercel deploy URL, then a placeholder
+// TODO(jasmine): set NEXT_PUBLIC_SITE_URL (or edit the fallback) to the real domain
 export const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://jasmine-tu.vercel.app");
@@ -30,7 +30,7 @@ export const taglines = [
   "fueled by matcha & curiosity",
 ] as const;
 
-// the four corner stars of the constellation garden
+// four corner stars of the constellation garden
 // hx/hy = corner direction (-1..1); color = hover + click-burst tint
 export interface GardenNode {
   key: string;

@@ -2,16 +2,16 @@ import { ImageResponse } from "next/og";
 
 import { site } from "@/content/site";
 
-// share card mirrors the home page: the garden wash (4 radial blobs on cream) +
-// the wispy ribbon, with just the script name centered. used for every route
-// (Next auto-wires og:image / twitter:image from this file).
+// share card mirrors the home page — garden wash (4 radial blobs on cream) +
+// wispy ribbon with the script name centered; used for every route
+// (Next auto-wires og:image / twitter:image from this file)
 export const alt = "Jasmine Tu — software engineer & designer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// the garden wash from src/lib/canvas/wash.ts, flattened to css radial-gradients
-// (positions × 1200/630, radii × 1200; each blob fades a→a*.4→0 like the canvas).
-// listed top-most first to match the canvas paint order.
+// garden wash from src/lib/canvas/wash.ts flattened to CSS radial-gradients
+// (positions × 1200/630, radii × 1200; each blob fades a→a*.4→0 like the canvas);
+// top-most first to match the canvas paint order
 const WASH = [
   "radial-gradient(480px 480px at 72px 76px, rgba(233,128,176,.12) 0%, rgba(233,128,176,.048) 55%, transparent 100%)",
   "radial-gradient(720px 720px at 120px 580px, rgba(160,190,128,.20) 0%, rgba(160,190,128,.08) 55%, transparent 100%)",
@@ -19,9 +19,9 @@ const WASH = [
   "radial-gradient(744px 744px at 672px 25px, rgba(233,128,176,.26) 0%, rgba(233,128,176,.104) 55%, transparent 100%)",
 ].join(",");
 
-// a static snapshot of the animated canvas ribbon (src/lib/canvas/draw.ts:
-// drawRibbon) — same sine-wave centerline + tapered width, frozen at time T.
-// returns the filled outline path + the gradient endpoints along its length.
+// static snapshot of the animated canvas ribbon (src/lib/canvas/draw.ts
+// drawRibbon) — same sine-wave centerline + tapered width, frozen at time T;
+// returns the filled outline path + gradient endpoints along its length
 function buildRibbon(T: number, W: number, H: number) {
   const N = 70;
   const PH = 2.0;
@@ -37,7 +37,7 @@ function buildRibbon(T: number, W: number, H: number) {
       Math.sin(px * 0.0032 + T * 0.2) * 12;
     pts.push([px, py]);
   }
-  const SCALE = 1.6; // a touch wider than the live canvas so the tints read on the card
+  const SCALE = 1.6; // a touch wider than the live canvas so tints read on the card
   const wAt = (i: number) => {
     const pr = i / N;
     return (
@@ -96,7 +96,7 @@ export default async function OpengraphImage() {
           backgroundImage: WASH,
         }}
       >
-        {/* the actual ribbon geometry, white→pink→white→green along its length */}
+        {/* ribbon geometry, white→pink→white→green along its length */}
         <svg
           width={size.width}
           height={size.height}
@@ -122,7 +122,7 @@ export default async function OpengraphImage() {
               <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
             </linearGradient>
           </defs>
-          {/* soft white edge so the tints separate from the like-colored wash */}
+          {/* soft white edge so tints separate from the like-colored wash */}
           <path d={ribbon.d} fill="none" stroke="#ffffff" strokeOpacity="0.4" strokeWidth={2} />
           <path d={ribbon.d} fill="url(#ribbon)" />
         </svg>

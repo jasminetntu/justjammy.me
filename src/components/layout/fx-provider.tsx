@@ -23,8 +23,8 @@ export function useFx(): FxApi {
 }
 
 export function FxProvider({ children }: { children: React.ReactNode }) {
-  // one engine for the whole session; constructor is side-effect free so this
-  // is safe during SSR — canvases attach later via <BackgroundCanvas>
+  // one engine for the whole session; side-effect-free constructor is SSR-safe
+  // — canvases attach later via <BackgroundCanvas>
   const [api] = useState<FxApi>(() => {
     const engine = new FxEngine();
     return {
@@ -37,8 +37,8 @@ export function FxProvider({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
 
-  // route changes drive the background wash mood (the page cross-fade is handled
-  // by <PageTransition>)
+  // route changes drive the background wash mood — page cross-fade handled by
+  // <PageTransition>
   useEffect(() => {
     api.engine.setView(pathToView(pathname));
   }, [pathname, api]);

@@ -62,7 +62,7 @@ describe("clampCamAxis", () => {
 });
 
 describe("layoutWall", () => {
-  // the real placeholder set: a mix of sizes, no manual placement
+  // real placeholder set: a mix of sizes, no manual placement
   const sample: LayoutInput[] = [
     { slug: "a", width: 240, height: 316 },
     { slug: "b", width: 240, height: 316 },

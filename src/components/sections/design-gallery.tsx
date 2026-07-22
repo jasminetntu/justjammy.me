@@ -32,7 +32,6 @@ function restingTransform(pl: Placement): string {
 }
 
 // explore ⁄ compact toggle label — dims when inactive, brightens + lifts on hover
-// (ported from the prototype's [data-art-mode] pointer handlers)
 function ModeButton({
   label,
   active,
@@ -66,8 +65,8 @@ export function DesignGallery() {
 
   const [mode, setMode] = useState<"wall" | "grid">("wall");
 
-  // "drag to wander" hint — shown only until the first real drag, and never
-  // again once the user has dragged before (persisted across visits)
+  // "drag to wander" hint — shown until the first real drag, then never again
+  // (persisted across visits)
   const [showHint, setShowHint] = useState(false);
   const hintDismissed = useRef(false);
   useEffect(() => {
@@ -75,7 +74,7 @@ export function DesignGallery() {
     try {
       draggedBefore = localStorage.getItem("design-wall-dragged") === "1";
     } catch {
-      // localStorage unavailable (private mode, etc.) — just show the hint
+      // localStorage unavailable (private mode, etc.) — show the hint
     }
     if (draggedBefore) {
       hintDismissed.current = true;
@@ -104,7 +103,7 @@ export function DesignGallery() {
   const viewport = useRef({ w: 1200, h: 800 });
 
   // resolve each piece's wall position once (auto-scattered, non-overlapping,
-  // with per-piece manual overrides honored), then pair it back with its content
+  // manual overrides honored), then pair back with content
   const layout = useMemo(() => {
     const placed = layoutWall(
       pieces.map((p) => ({ slug: p.slug, width: p.size.w, height: p.size.h, place: p.place })),
@@ -121,8 +120,8 @@ export function DesignGallery() {
     [layout],
   );
 
-  // the draggable wall: pointer drag + momentum + parallax + idle sway, all driven
-  // by one rAF loop. lives for the component's lifetime; guarded to wall mode.
+  // draggable wall — pointer drag + momentum + parallax + idle sway in one rAF
+  // loop; lives for the component's lifetime, guarded to wall mode
   useEffect(() => {
     const reduce =
       typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -251,7 +250,7 @@ export function DesignGallery() {
 
   return (
     <main className="fixed inset-0 overflow-hidden">
-      {/* WALL — full-bleed draggable polaroid scatter */}
+      {/* wall — full-bleed draggable polaroid scatter */}
       <div
         ref={wallRef}
         className="absolute inset-0 cursor-grab touch-none"
@@ -317,11 +316,11 @@ export function DesignGallery() {
         })}
       </div>
 
-      {/* GRID — editorial masonry, three columns */}
+      {/* grid — editorial masonry, three columns */}
       {mode === "grid" && (
         <div className="absolute inset-0 z-[1] overflow-y-auto">
           <div className="mx-auto max-w-[1180px] px-[clamp(24px,5vw,60px)] pb-[100px] pt-[132px] md:pt-[172px]">
-            {/* css multi-column masonry — 2 cols on phones, 3 on wider screens */}
+            {/* CSS multi-column masonry — 2 cols on phones, 3 on wider screens */}
             <div className="columns-2 gap-6 md:columns-3">
               {pieces.map((p) => (
                 <Link
@@ -359,9 +358,9 @@ export function DesignGallery() {
         </div>
       )}
 
-      {/* back + eyebrow — top left, below the header. on mobile it lines up
-          with the page edge (matching the about page's left padding); on desktop
-          it shifts right to clear the J monogram */}
+      {/* back + eyebrow — top left, below the header; mobile lines up with the
+          page edge (matching about's left padding), desktop shifts right to
+          clear the J monogram */}
       <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-[110px] z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
         <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
         <h1 className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
@@ -376,8 +375,8 @@ export function DesignGallery() {
         <ModeButton label="compact" active={mode === "grid"} onClick={() => setMode("grid")} />
       </div>
 
-      {/* wander hint — only on the wall; fades out on the first drag (and in
-          on load), so it never blinks away abruptly */}
+      {/* wander hint — wall only; fades in on load, out on the first drag, so
+          it never blinks away */}
       {mode === "wall" && (
         <div
           className="font-serif pointer-events-none absolute bottom-[74px] left-1/2 z-[5] -translate-x-1/2 whitespace-nowrap text-[14.5px] italic text-[#c189a6] transition-opacity duration-700 ease-out"

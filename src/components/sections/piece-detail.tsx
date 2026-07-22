@@ -5,8 +5,8 @@ import { BackLink } from "@/components/ui/back-link";
 import type { DesignPiece } from "@/content/design";
 
 // field-notes layout for a single design piece — mirrors the project detail
-// page so the two case-study surfaces feel like one family. mostly visual: the
-// artwork sits taped in like a gallery print, with a short typed write-up.
+// page so both case-study surfaces feel like one family; mostly visual, artwork
+// taped in like a gallery print with a short write-up
 export function PieceDetail({ piece }: { piece: DesignPiece }) {
   return (
     <main className="mx-auto max-w-[880px] px-[clamp(20px,4vw,40px)] pb-[90px] pt-[104px]">

@@ -20,7 +20,7 @@ import { featuredProjects, type ProjectMeta } from "@/content/projects";
 import { ease } from "@/lib/theme";
 
 // fades a block in when it scrolls into view; `delay` staggers siblings that
-// enter together (works on load AND when scrolled to, unlike a global timer)
+// enter together (works on load and on scroll, unlike a global timer)
 function Reveal({
   children,
   className,
@@ -64,8 +64,8 @@ function Reveal({
   );
 }
 
-// two-column layout: a fixed identity sidebar (back · title · currently · skills ·
-// featured projects) + a scrolling "growing stem" timeline on the right.
+// two-column layout — fixed identity sidebar (back · title · currently · skills ·
+// featured projects) + scrolling "growing stem" timeline on the right
 export function ExperienceVine() {
   const projects = featuredProjects();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -74,11 +74,11 @@ export function ExperienceVine() {
   useScrollWash(scrollRef);
 
   return (
-    // desktop: fixed two-column (scroll-independent sidebar + timeline).
-    // mobile: normal document flow — sidebar stacks on top, timeline below,
-    // the whole page scrolls as one.
+    // desktop: fixed two-column (scroll-independent sidebar + timeline)
+    // mobile: normal document flow — sidebar on top, timeline below, whole page
+    // scrolls as one
     <main className="min-h-dvh md:fixed md:inset-0 md:flex md:overflow-hidden">
-      {/* ── SIDEBAR ── */}
+      {/* ── sidebar ── */}
       <aside
         className="flex flex-col bg-[linear-gradient(to_bottom,rgba(255,255,255,.32)_72%,rgba(255,255,255,0))] px-[clamp(28px,3vw,40px)] pb-6 pt-[92px] md:h-full md:overflow-y-auto md:border-r md:border-[rgba(154,127,107,.14)] md:bg-white/30 md:bg-none md:pb-9 md:pt-[76px] md:backdrop-blur-[3px]"
         style={{ flex: "0 0 clamp(356px,35vw,476px)" }}
@@ -99,14 +99,14 @@ export function ExperienceVine() {
           </span>
         </div>
 
-        {/* divider only on desktop — on mobile the toggle row's own underline is
-            the single separator (avoids doubled-up lines) */}
+        {/* divider on desktop only — on mobile the toggle row's underline is the
+            single separator (avoids doubled lines) */}
         <div className="my-[22px] hidden shrink-0 border-t border-[rgba(154,127,107,.18)] md:block" />
 
         {/* mobile-only toggle — collapses skills + certs so the work timeline
-            (NVIDIA / Google) surfaces first. flat editorial row: label + a
-            four-point star that spins open. the whole row is the tap target.
-            hidden on desktop, where the sidebar shows everything expanded */}
+            (NVIDIA / Google) surfaces first; label + four-point star that spins
+            open, whole row is the tap target; hidden on desktop where the
+            sidebar shows everything expanded */}
         <button
           type="button"
           onClick={() => setSkillsOpen((o) => !o)}
@@ -124,8 +124,8 @@ export function ExperienceVine() {
           </span>
         </button>
 
-        {/* collapsible on mobile (animated height + fade); always open on desktop.
-            grid-rows 0fr→1fr animates to the content's natural height */}
+        {/* collapsible on mobile (animated height + fade), always open on
+            desktop; grid-rows 0fr→1fr animates to content's natural height */}
         <div
           className={`grid transition-[grid-template-rows] duration-500 ease-out md:grid-rows-[1fr] ${
             skillsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -179,7 +179,7 @@ export function ExperienceVine() {
 
       </aside>
 
-      {/* ── TIMELINE ── */}
+      {/* ── timeline ── */}
       <div ref={scrollRef} className="relative min-w-0 md:h-full md:flex-1 md:overflow-y-auto">
         <div className="mx-auto max-w-[720px] px-[clamp(24px,4vw,52px)] pb-24 pt-6 md:pt-[112px]">
           <div className="relative">
@@ -265,8 +265,8 @@ function Rail({ children }: { children: React.ReactNode }) {
   return <div className="relative flex flex-[0_0_48px] justify-center">{children}</div>;
 }
 
-// soft gradient fills used when a project has no image yet — palette-matched
-// so empty cards still look intentional
+// gradient fills for projects with no image yet — palette-matched so empty
+// cards look intentional
 const CARD_GRADIENTS = [
   "linear-gradient(150deg,#e7d4f0,#c9a9dd)",
   "linear-gradient(150deg,#f0d4e6,#d69fc6)",
@@ -275,8 +275,8 @@ const CARD_GRADIENTS = [
   "linear-gradient(150deg,#e3d9f4,#c0a9dd)",
 ];
 
-// an image tile: cover image (or gradient fallback) with the title bottom-left;
-// on hover it lifts, the tint deepens, and a centered description takes over.
+// image tile — cover image (or gradient fallback) with title bottom-left; on
+// hover it lifts, the tint deepens, a centered description takes over
 function ProjectCard({ project, index }: { project: ProjectMeta; index: number }) {
   const image = project.images?.[0];
 
@@ -352,9 +352,9 @@ function SectionHeader({
   const continuing = fromColor !== null;
   const bloomTop = continuing ? 22 : 0;
 
-  // stem is solid below the medallion (no incoming line above it) — the soft
-  // break between sections comes from the previous section's last entry fading
-  // out. the final (projects) stem fades out at the bottom.
+  // stem solid below the medallion (no incoming line above) — section breaks
+  // come from the previous section's last entry fading out; the final (projects)
+  // stem fades out at the bottom
   const tint = stemTint(bloom);
   const line = toTransparent
     ? `linear-gradient(${tint} 0px, ${tint} ${bloomTop + 56}px, rgba(154,123,191,0) 100%)`
@@ -374,8 +374,8 @@ function SectionHeader({
           <FourPointStar size={22} color="#ffffff" style={{ filter: "none" }} />
         </span>
       </Rail>
-      {/* min-height guarantees the 44px medallion fits within the header row,
-          so the next entry's dot starts below it (no overlap) */}
+      {/* min-height guarantees the 44px medallion fits the header row, so the
+          next entry's dot starts below it (no overlap) */}
       <div className="flex-1" style={{ paddingTop: bloomTop + 6, minHeight: bloomTop + 48 }}>
         <div className="font-serif text-[29px] italic leading-none" style={{ color: heading }}>
           {label}

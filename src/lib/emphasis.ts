@@ -6,8 +6,8 @@ export interface TextSegment {
 }
 
 export function parseEmphasis(input: string): TextSegment[] {
-  // odd-indexed segments sat between ** markers; unmatched markers just
-  // bold the trailing text, which is obvious enough to catch in review
+  // odd-indexed segments sit between ** markers; unmatched marker bolds
+  // trailing text — obvious enough to catch in review
   return input
     .split("**")
     .map((text, i) => ({ text, bold: i % 2 === 1 }))

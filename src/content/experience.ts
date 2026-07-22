@@ -1,6 +1,5 @@
-// experience timeline — the "growing stem" vine on /experience.
-// dates are display strings (ranges are irregularly formatted) kept verbatim
-// from the locked prototype.
+// experience timeline — the "growing stem" vine on /experience; dates are
+// display strings (irregular ranges) kept verbatim from the locked prototype
 
 export interface TimelineEntry {
   role: string;
@@ -21,8 +20,7 @@ export interface TimelineSection {
 
 export const currently = "C.S. @ UC Irvine";
 
-// sidebar skills ledger — from Jasmine's resume + the stacks she used at
-// NVIDIA and Google Cloud.
+// sidebar skills ledger — from Jasmine's resume + her NVIDIA and Google Cloud stacks
 export interface SkillGroup {
   category: string;
   value: string;

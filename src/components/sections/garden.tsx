@@ -11,8 +11,8 @@ import { ease } from "@/lib/theme";
 const ROTATE_MS = 5200;
 const FADE_MS = 1000;
 
-// home = the constellation garden: script name, rotating subtitle,
-// four floating corner stars that navigate to each section
+// home — constellation garden: script name, rotating subtitle, four floating
+// corner stars that navigate to each section
 export function Garden() {
   return (
     <main className="relative flex h-dvh items-center justify-center overflow-hidden">
@@ -72,7 +72,7 @@ function GardenStars() {
   const wrapRefs = useRef<(HTMLElement | null)[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
   // touch devices have no hover — a tap briefly marks the star "active" so it
-  // flashes its color + does the little turn while the page fades out
+  // flashes its color + turns while the page fades out
   const [tapped, setTapped] = useState<number | null>(null);
 
   useEffect(() => {

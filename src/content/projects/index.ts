@@ -1,6 +1,5 @@
-// project registry — structured metadata lives here (typed, autocompleted);
-// long-form case-study prose lives in the sibling `<slug>.mdx` file.
-// add a project = one entry here + one MDX file.
+// project registry — typed metadata here, long-form case-study prose in the
+// sibling `<slug>.mdx`; add a project = one entry here + one MDX file
 
 export type ProjectLayout = "notes" | "editorial" | "rail";
 
@@ -37,10 +36,10 @@ export interface ProjectMeta {
   featured?: boolean; // surface on the vine's Projects section
 }
 
-// ordered as they should appear; the vine reads `featured` ones.
+// ordered as they should appear; the vine reads `featured` ones
 // TODO(jasmine): add real `links` URLs (itch.io / Devpost / live) + `images`
-// (0 or 1 for most; a few may have more). tags marked "(confirm)" are guesses
-// from the description — correct the stack where I couldn't tell.
+// (0-1 for most, a few more); tags marked "(confirm)" are guesses from the
+// description — correct the stack where unsure
 export const projects: ProjectMeta[] = [
   {
     slug: "before-i-go",

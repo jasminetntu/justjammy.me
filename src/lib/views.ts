@@ -1,4 +1,4 @@
-// route → view mapping; views drive the background wash mood and ribbon visibility
+// route → view mapping; view drives background wash mood + ribbon visibility
 
 export const VIEWS = [
   "garden",

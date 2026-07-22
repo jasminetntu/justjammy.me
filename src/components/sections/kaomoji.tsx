@@ -17,8 +17,8 @@ interface KaoSpark {
   duration: number;
 }
 
-// the (^▽^)/ in the about headline — turns pink on hover, and clicking
-// makes little text sparkles fly out from the hand
+// the (^▽^)/ in the about headline — turns pink on hover; clicking flings text
+// sparkles from the hand
 export function Kaomoji() {
   const [sparks, setSparks] = useState<KaoSpark[]>([]);
   // desktop turns pink on hover; on mobile a tap flashes it pink for a beat

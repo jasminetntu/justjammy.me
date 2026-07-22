@@ -1,4 +1,4 @@
-// structured dev logger — silent in production builds so the console stays clean for visitors
+// structured dev logger — silent in production so the console stays clean for visitors
 
 type LogData = Record<string, unknown>;
 

@@ -91,7 +91,7 @@ const PETALS: Petal[] = [
   },
 ];
 
-// top chrome: J monogram (home) + radial bloom menu. hidden on the garden.
+// top chrome — J monogram (home) + radial bloom menu; hidden on the garden
 export function SiteHeader() {
   const pathname = usePathname();
   const view = pathToView(pathname);

@@ -7,7 +7,7 @@ interface FourPointStarProps {
   style?: React.CSSProperties;
 }
 
-// the 4-point sparkle motif used across the whole site
+// 4-point sparkle motif used across the site
 export function FourPointStar({ size = 26, color = "#ffffff", className, style }: FourPointStarProps) {
   return (
     <svg

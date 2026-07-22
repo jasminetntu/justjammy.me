@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 
 import { useFx } from "@/components/layout/fx-provider";
 
-// two fixed full-viewport canvases: washes+ribbon behind the content,
-// sparkles floating above it (pointer events pass through both)
+// two fixed full-viewport canvases — washes+ribbon behind content, sparkles
+// above; pointer events pass through both
 export function BackgroundCanvas() {
   const { engine } = useFx();
   const bgRef = useRef<HTMLCanvasElement>(null);

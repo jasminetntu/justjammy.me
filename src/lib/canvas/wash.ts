@@ -39,7 +39,7 @@ export const WASH_SETS: Record<View, Wash> = {
     [233, 128, 176, 0.08],
   ],
   contact: [
-    // kept faint: the page gradient carries the color, the ribbon drifts over it
+    // faint: page gradient carries the color, ribbon drifts over it
     [233, 128, 176, 0.06],
     [160, 190, 128, 0.07],
     [176, 150, 224, 0.03],
@@ -59,8 +59,8 @@ export const WASH_SETS: Record<View, Wash> = {
   ],
 };
 
-// scroll-driven moods on /experience — the wash shifts green → pink → lavender
-// as each vine section crosses the viewport midpoint
+// scroll-driven moods on /experience — wash shifts green → pink → lavender as
+// each vine section crosses viewport midpoint
 export const EXPERIENCE_ZONE_WASHES: Record<"work" | "leadership" | "projects", Wash> = {
   work: [
     [160, 190, 128, 0.22],

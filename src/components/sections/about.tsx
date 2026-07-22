@@ -39,9 +39,9 @@ export function About() {
         </div>
         <h1 className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-soft">about</h1>
 
-        {/* explicit grid placement so desktop stays two-column (Hello + text on
-            the left, portrait on the right), while mobile flows in a custom
-            order: portrait + badges → Hello → description text */}
+        {/* explicit grid placement — desktop stays two-column (Hello + text
+            left, portrait right); mobile flows portrait + badges → Hello →
+            description */}
         <div className="mt-[18px] grid grid-cols-1 items-start gap-x-[clamp(28px,5vw,64px)] md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
           <h2 className="font-serif order-2 mb-[.5em] text-[clamp(30px,4vw,52px)] font-medium leading-[1.08] text-ink-dark md:col-start-1 md:row-start-1">
             Hello! <Kaomoji />

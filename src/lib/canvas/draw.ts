@@ -35,7 +35,7 @@ export function drawStar(
 const RIBBON = { ph: 2.0, maxW: 16, a: 0.5 };
 const N = 70;
 
-// the single wispy white→pink→green ribbon that drifts across the page
+// single wispy white→pink→green ribbon drifting across the page
 export function drawRibbon(
   ctx: CanvasRenderingContext2D,
   t: number,

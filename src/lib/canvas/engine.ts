@@ -12,8 +12,8 @@ import { logDebug } from "@/lib/log";
 import type { View } from "@/lib/views";
 
 // full-viewport ambient engine: color washes, wispy ribbon, sparkle cursor,
-// click bursts, and contact shooting stars. one instance lives for the whole
-// session; the current route only changes its wash mood.
+// click bursts, contact shooting stars — one session-long instance; route only
+// swaps the wash mood
 export class FxEngine {
   private bg: HTMLCanvasElement | null = null;
   private sp: HTMLCanvasElement | null = null;
@@ -31,8 +31,8 @@ export class FxEngine {
   private washTarget: Wash = WASH_SETS.garden;
   private washOverride: Wash | null = null;
   private ribbonAlpha = 1;
-  // when the user prefers reduced motion: static washes + ribbon, no parallax,
-  // no cursor/ambient sparkles, no shooting stars or click bursts
+  // reduced motion: static washes + ribbon, no parallax, no cursor/ambient
+  // sparkles, no shooting stars or click bursts
   private reduced = false;
 
   private sparks: Spark[] = [];
@@ -86,7 +86,7 @@ export class FxEngine {
     this.washTarget = WASH_SETS[view];
   }
 
-  // scroll-driven mood shifts (experience page) temporarily override the view wash
+  // scroll-driven mood shifts (experience page) temporarily override view wash
   setWashOverride(wash: Wash | null): void {
     this.washOverride = wash;
     this.washTarget = wash ?? WASH_SETS[this.view];
@@ -159,7 +159,7 @@ export class FxEngine {
       x.fillRect(0, 0, W, H);
     });
 
-    // ribbon fades out where it would fight the content (the full-bleed design wall)
+    // ribbon fades out where it would fight content (full-bleed design wall)
     const ribTgt = this.view === "design" ? 0 : 1;
     this.ribbonAlpha += (ribTgt - this.ribbonAlpha) * 0.04;
     // reduced motion: draw the ribbon frozen (fixed time, no pointer sway)

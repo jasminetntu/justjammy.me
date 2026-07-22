@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-// on-brand 404 — also keeps unknown-route navigations inside the normal
+// on-brand 404 — keeps unknown-route navigations in the normal
 // router flow so the page cross-fade still runs
 export default function NotFound() {
   return (

@@ -6,9 +6,8 @@ import { usePathname } from "next/navigation";
 import { useContext, useState } from "react";
 
 // holds the outgoing route's content while it fades out — App Router swaps
-// `children` immediately on navigation, so without this the exiting layer
-// would already show the new page. known pattern; relies on a Next internal,
-// revisit if a Next upgrade breaks the import path.
+// `children` immediately on nav, so the exiting layer would otherwise show the
+// new page; relies on a Next.js internal, revisit if an upgrade breaks the import path
 function FrozenRouter({ children }: { children: React.ReactNode }) {
   const context = useContext(LayoutRouterContext);
   // useState captures the context from the first render and never updates it
@@ -16,8 +15,8 @@ function FrozenRouter({ children }: { children: React.ReactNode }) {
   return <LayoutRouterContext.Provider value={frozen}>{children}</LayoutRouterContext.Provider>;
 }
 
-// true cross-fade between routes, matching the prototype's .8s view blend —
-// the exiting page pops out of layout flow and fades while the next fades in
+// true cross-fade between routes — exiting page pops out of layout flow and
+// fades while the next fades in
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 

@@ -24,6 +24,6 @@ export const ease = {
   spring: "cubic-bezier(.34,1.56,.64,1)",
 } as const;
 
-// the 4-point star path shared by every sparkle/medallion (viewBox -12 -12 24 24)
+// 4-point star path shared by every sparkle/medallion (viewBox -12 -12 24 24)
 export const STAR_PATH =
   "M0 -11 C1.4 -3 3 -1.4 11 0 C3 1.4 1.4 3 0 11 C-1.4 3 -3 1.4 -11 0 C-3 -1.4 -1.4 -3 0 -11 Z";

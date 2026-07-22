@@ -9,12 +9,12 @@ import { FourPointStar } from "@/components/ui/four-point-star";
 import { site } from "@/content/site";
 import { ease } from "@/lib/theme";
 
-// the greeting cycles on click; each click also flings a shooting star
+// greeting cycles on click; each click also flings a shooting star
 const GREETINGS = ["hello", "hi", "chào", "hola"] as const;
 
-// soft blush → sage wash over cream that fills the whole page (from the contact
-// prototype). painted on the page backdrop (body) so the transparent canvas —
-// and the ribbon drawn on it — layer over it at full strength.
+// soft blush → sage wash over cream filling the page; painted on the body
+// backdrop so the transparent canvas — and its ribbon — layer over it at full
+// strength
 const PAGE_GRADIENT = [
   "radial-gradient(72% 52% at 26% 4%, rgba(233,128,176,.24), transparent 62%)",
   "radial-gradient(58% 62% at 96% 56%, rgba(160,190,128,.34), transparent 62%)",
@@ -44,8 +44,8 @@ export function ContactLetter() {
   const [pop, setPop] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // paint the gradient on the page backdrop so the transparent background canvas
-  // (and the ribbon drawn on it) layer over it; restored when leaving the page
+  // paint gradient on the body backdrop so the transparent canvas (and its
+  // ribbon) layer over it; restored on leaving
   useEffect(() => {
     const prev = document.body.style.background;
     document.body.style.background = PAGE_GRADIENT;
@@ -61,7 +61,7 @@ export function ContactLetter() {
     return () => clearTimeout(t);
   }, [pop]);
 
-  // revert the "copied" label after a moment
+  // revert "copied" label after a moment
   useEffect(() => {
     if (!copied) return;
     const t = setTimeout(() => setCopied(false), 1500);
@@ -86,7 +86,7 @@ export function ContactLetter() {
     <main className="flex min-h-dvh items-center justify-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
       <PagePanel className="w-full max-w-[1120px]">
         <div className="grid grid-cols-1 items-end gap-[clamp(38px,6vw,76px)] md:[grid-template-columns:1.4fr_.6fr]">
-          {/* LEFT — the letter */}
+          {/* left — the letter */}
           <div className="text-left">
             <div className="mb-[18px]">
               <BackLink href="/" label="back" />
@@ -105,8 +105,8 @@ export function ContactLetter() {
                   }
                 }}
                 data-pop={pop}
-                // desktop: hover turns it pink. mobile (no hover): a tap flashes
-                // it pink for a beat via the click "pop" state.
+                // desktop: hover turns it pink; mobile (no hover): tap flashes
+                // it pink for a beat via the "pop" state
                 className="inline-block cursor-pointer transition-[color,transform] duration-300 md:hover:text-pink max-md:data-[pop=true]:text-pink"
                 style={{
                   transform: pop ? "scale(1.12)" : "scale(1)",
@@ -153,7 +153,7 @@ export function ContactLetter() {
             </div>
           </div>
 
-          {/* RIGHT — the links, a right-aligned label/value grid */}
+          {/* right — links, a right-aligned label/value grid */}
           <div className="grid w-max items-baseline gap-x-5 gap-y-[14px] [grid-template-columns:auto_auto] md:ml-auto md:gap-x-[30px]">
             {LINKS.map((row) => (
               <Fragment key={row.label}>

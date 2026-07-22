@@ -30,15 +30,15 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   // absolute base for share images + canonical/sitemap URLs
   metadataBase: new URL(siteUrl),
-  // child pages set just their name (e.g. "About"); Next appends the suffix.
-  // pages that need a standalone title can use `title: { absolute: "…" }`.
+  // child pages set only their name; Next appends the suffix —
+  // standalone titles use `title: { absolute: "…" }`
   title: {
     default: site.name,
     template: `%s · ${site.name}`,
   },
   description: site.description,
-  // og/twitter title + description flow from each page's title/description;
-  // the branded card comes from app/opengraph-image.tsx + twitter-image.tsx
+  // OG/Twitter title + description flow from each page's title/description;
+  // branded card comes from app/opengraph-image.tsx + twitter-image.tsx
   openGraph: {
     type: "website",
     siteName: site.name,

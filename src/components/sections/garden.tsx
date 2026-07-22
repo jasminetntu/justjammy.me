@@ -30,6 +30,8 @@ function RotatingTagline() {
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
+    // don't auto-rotate under reduced motion — show a single tagline statically
+    if (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const cycle = setInterval(() => {
       setFading(true);
       setTimeout(() => {
@@ -94,6 +96,10 @@ function GardenStars() {
     place();
     window.addEventListener("resize", place);
 
+    // reduced motion: stars rest at their anchors (no idle drift, no parallax)
+    const reduce =
+      typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const t0 = performance.now();
     let raf = 0;
     const tick = (now: number) => {
@@ -101,10 +107,11 @@ function GardenStars() {
       motions.forEach((m, i) => {
         const el = wrapRefs.current[i];
         if (!el) return;
-        const ix = Math.sin(t * m.s1 + m.ph) * 12;
-        const iy = Math.cos(t * m.s2 + m.ph) * 14;
-        const tx = m.homeX + ix + engine.pointer.nx * (20 + i * 5);
-        const ty = m.homeY + iy + engine.pointer.ny * (20 + i * 5);
+        const ix = reduce ? 0 : Math.sin(t * m.s1 + m.ph) * 12;
+        const iy = reduce ? 0 : Math.cos(t * m.s2 + m.ph) * 14;
+        const par = reduce ? 0 : 1;
+        const tx = m.homeX + ix + engine.pointer.nx * (20 + i * 5) * par;
+        const ty = m.homeY + iy + engine.pointer.ny * (20 + i * 5) * par;
         m.cur.x += (tx - m.cur.x) * 0.06;
         m.cur.y += (ty - m.cur.y) * 0.06;
         el.style.transform = `translate(-50%,-50%) translate(${m.cur.x}px,${m.cur.y}px)`;

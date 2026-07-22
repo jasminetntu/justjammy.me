@@ -6,9 +6,9 @@
   --color-ink: #6b5343;
   --color-ink-dark: #5a4636;
   --color-ink-deep: #40382f;
-  --color-ink-muted: #9a7f6b;
+  --color-ink-muted: #8f745e; /* nudged darker for legible contrast on cream */
   --color-ink-label: #8a6f5c;
-  --color-ink-faint: #b8a898;
+  --color-ink-faint: #9a8770; /* was #b8a898 (~2:1); deepened toward ~3:1 */
   --color-pink: #e2a7c4;
   --color-pink-mid: #dd8fb6;
   --color-pink-deep: #c077a3;
@@ -30,6 +30,14 @@ body {
   height: 100%;
   background: var(--color-cream);
   color: var(--color-ink);
+}
+
+/* consistent, on-brand keyboard focus ring (only shows for keyboard nav, not
+   mouse clicks) so every interactive element is clearly reachable */
+:focus-visible {
+  outline: 2px solid var(--color-pink-deep);
+  outline-offset: 3px;
+  border-radius: 3px;
 }
 
 /* kaomoji click sparkles fly out to the right and dissolve */

@@ -51,9 +51,18 @@ export function Kaomoji() {
 
   return (
     <span
+      role="button"
+      tabIndex={0}
+      aria-label="sparkle"
       data-flash={flash}
       className="relative cursor-pointer text-ink-dark transition-colors duration-[350ms] md:hover:text-pink-deep max-md:data-[flash=true]:text-pink-deep"
       onClick={burst}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          burst();
+        }
+      }}
     >
       (^
       {/* ▽ falls back to a non-Cormorant font, so shrink + stroke it to blend in */}

@@ -31,6 +31,9 @@ export class FxEngine {
   private washTarget: Wash = WASH_SETS.garden;
   private washOverride: Wash | null = null;
   private ribbonAlpha = 1;
+  // when the user prefers reduced motion: static washes + ribbon, no parallax,
+  // no cursor/ambient sparkles, no shooting stars or click bursts
+  private reduced = false;
 
   private sparks: Spark[] = [];
   private shoots: ShootingStar[] = [];
@@ -47,14 +50,20 @@ export class FxEngine {
     this.pointer.y = window.innerHeight / 2;
     this.t0 = performance.now();
 
+    this.reduced =
+      typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     this.onResize();
     window.addEventListener("resize", this.onResize);
     window.addEventListener("pointermove", this.onMove, { passive: true });
-    this.ambientTimer = setInterval(() => {
-      if (Math.random() < 0.7) {
-        this.sparks.push(makeTrailSpark(Math.random() * this.W, Math.random() * this.H * 0.85, null, true));
-      }
-    }, 900);
+    // ambient drifting sparkles — skipped entirely under reduced motion
+    if (!this.reduced) {
+      this.ambientTimer = setInterval(() => {
+        if (Math.random() < 0.7) {
+          this.sparks.push(makeTrailSpark(Math.random() * this.W, Math.random() * this.H * 0.85, null, true));
+        }
+      }, 900);
+    }
     this.raf = requestAnimationFrame(this.loop);
     logDebug("fx.mount", { w: this.W, h: this.H });
   }
@@ -84,6 +93,7 @@ export class FxEngine {
   }
 
   burst(x: number, y: number, col: string, n: number, col2?: string): void {
+    if (this.reduced) return;
     this.sparks.push(...makeBurst(x, y, col, n, col2));
   }
 
@@ -92,6 +102,7 @@ export class FxEngine {
   }
 
   launchShoot(): void {
+    if (this.reduced) return;
     this.shoots.push(makeShootingStar(this.W));
   }
 
@@ -116,6 +127,7 @@ export class FxEngine {
     this.pointer.y = py;
     this.pointer.nx = (px / window.innerWidth - 0.5) * 2;
     this.pointer.ny = (py / window.innerHeight - 0.5) * 2;
+    if (this.reduced) return;
     // sparkle cursor trail — one spark every ~16px of travel
     if (!this.lastTrail) this.lastTrail = { x: px, y: py };
     if (Math.hypot(px - this.lastTrail.x, py - this.lastTrail.y) > 16) {
@@ -132,11 +144,12 @@ export class FxEngine {
     const { W, H } = this;
 
     x.clearRect(0, 0, W, H);
-    stepWash(this.washCur, this.washTarget, washSpeed(this.view));
+    // reduced motion: snap the wash to its target (no lerp) and no parallax drift
+    stepWash(this.washCur, this.washTarget, this.reduced ? 1 : washSpeed(this.view));
 
     // washes drift with cursor parallax
-    const ppx = this.pointer.nx * 26;
-    const ppy = this.pointer.ny * 26;
+    const ppx = this.reduced ? 0 : this.pointer.nx * 26;
+    const ppy = this.reduced ? 0 : this.pointer.ny * 26;
     this.washCur.forEach((c, i) => {
       const p = WASH_POS[i];
       const cx = p.x * W + ppx * (p.y > 0.5 ? -1 : 1);
@@ -153,7 +166,9 @@ export class FxEngine {
     // ribbon fades out where it would fight the content (the full-bleed design wall)
     const ribTgt = this.view === "design" ? 0 : 1;
     this.ribbonAlpha += (ribTgt - this.ribbonAlpha) * 0.04;
-    if (this.ribbonAlpha > 0.01) drawRibbon(x, t, W, H, this.ribbonAlpha, this.pointer.ny);
+    // reduced motion: draw the ribbon frozen (fixed time, no pointer sway)
+    if (this.ribbonAlpha > 0.01)
+      drawRibbon(x, this.reduced ? 8 : t, W, H, this.ribbonAlpha, this.reduced ? 0 : this.pointer.ny);
 
     s.clearRect(0, 0, W, H);
     stepSparks(this.sparks);

@@ -364,9 +364,9 @@ export function DesignGallery() {
           it shifts right to clear the J monogram */}
       <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-[110px] z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
         <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
-        <div className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
+        <h1 className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
-        </div>
+        </h1>
       </div>
 
       {/* explore ⁄ compact toggle — bottom center */}

@@ -37,7 +37,7 @@ export function About() {
         <div className="mb-3.5">
           <BackLink />
         </div>
-        <div className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-soft">about</div>
+        <h1 className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-soft">about</h1>
 
         {/* explicit grid placement so desktop stays two-column (Hello + text on
             the left, portrait on the right), while mobile flows in a custom

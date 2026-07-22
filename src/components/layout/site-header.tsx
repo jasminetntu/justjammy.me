@@ -151,7 +151,7 @@ function RadialMenu({ view }: { view: View }) {
             aria-label={petal.label}
             className="group absolute right-0 top-0 z-[1] flex h-11 w-11 items-center justify-center rounded-full"
             style={{
-              color: active ? petal.accent : "#9a7f6b",
+              color: active ? petal.accent : "#8f745e",
               opacity: open ? 1 : 0,
               transform: open
                 ? `translate(${dx}px,${dy}px) scale(1)`
@@ -164,7 +164,7 @@ function RadialMenu({ view }: { view: View }) {
             }}
             onPointerEnter={(e) => (e.currentTarget.style.color = petal.accent)}
             onPointerLeave={(e) =>
-              (e.currentTarget.style.color = active ? petal.accent : "#9a7f6b")
+              (e.currentTarget.style.color = active ? petal.accent : "#8f745e")
             }
           >
             {petal.icon}
@@ -204,7 +204,7 @@ function RadialMenu({ view }: { view: View }) {
             transition: `transform .55s ${ease.soft}`,
           }}
         >
-          <path d={STAR_PATH} fill="#9a7f6b" />
+          <path d={STAR_PATH} fill="#8f745e" />
         </svg>
       </button>
     </div>

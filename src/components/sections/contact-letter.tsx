@@ -94,7 +94,16 @@ export function ContactLetter() {
             <h1 className="font-script m-0 mb-[18px] text-[clamp(60px,8vw,92px)] leading-[.9] text-ink">
               say{" "}
               <span
+                role="button"
+                tabIndex={0}
+                aria-label="change greeting"
                 onClick={cycleGreeting}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    cycleGreeting();
+                  }
+                }}
                 data-pop={pop}
                 // desktop: hover turns it pink. mobile (no hover): a tap flashes
                 // it pink for a beat via the click "pop" state.
@@ -131,7 +140,7 @@ export function ContactLetter() {
             <div className="flex flex-wrap gap-2.5">
               <span
                 className="font-serif inline-flex items-center rounded-full px-[15px] py-[7px] text-[15px] italic"
-                style={{ background: "rgba(226,167,196,.14)", color: "#9a7f6b" }}
+                style={{ background: "rgba(226,167,196,.14)", color: "#8f745e" }}
               >
                 {site.location}
               </span>

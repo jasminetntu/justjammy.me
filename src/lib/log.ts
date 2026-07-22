@@ -13,8 +13,3 @@ export function logDebug(event: string, data?: LogData): void {
   if (process.env.NODE_ENV === "production") return;
   console.debug(`[site] ${event} ${fmt(data)}`.trimEnd());
 }
-
-export function logError(event: string, error: unknown, data?: LogData): void {
-  // errors always log, even in production — they're the diagnostic trail
-  console.error(`[site] ${event} ${fmt(data)}`.trimEnd(), error);
-}

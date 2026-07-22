@@ -21,14 +21,3 @@ export function pathToView(pathname: string): View {
   if (pathname === "/contact") return "contact";
   return "garden";
 }
-
-// burst color fired at screen center when navigating to a view
-export const VIEW_ACCENT: Record<View, string> = {
-  garden: "#e2a7c4",
-  about: "#a6c293",
-  experience: "#a6c293",
-  project: "#9a7bbf",
-  design: "#dd8fb6",
-  piece: "#c077a3",
-  contact: "#e2a7c4",
-};

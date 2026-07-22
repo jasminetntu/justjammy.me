@@ -97,10 +97,6 @@ export class FxEngine {
     this.sparks.push(...makeBurst(x, y, col, n, col2));
   }
 
-  burstCenter(col: string): void {
-    this.burst(this.W / 2, this.H / 2, col, 16, "#ffffff");
-  }
-
   launchShoot(): void {
     if (this.reduced) return;
     this.shoots.push(makeShootingStar(this.W));

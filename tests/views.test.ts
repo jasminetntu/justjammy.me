@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { pathToView, VIEW_ACCENT, VIEWS } from "@/lib/views";
+import { pathToView } from "@/lib/views";
 
 describe("pathToView", () => {
   it("maps each top-level route to its view", () => {
@@ -18,11 +18,5 @@ describe("pathToView", () => {
 
   it("falls back to garden for unknown paths", () => {
     expect(pathToView("/nope")).toBe("garden");
-  });
-
-  it("has an accent color for every view", () => {
-    for (const v of VIEWS) {
-      expect(VIEW_ACCENT[v]).toMatch(/^#[0-9a-f]{6}$/i);
-    }
   });
 });

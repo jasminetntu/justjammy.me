@@ -1,40 +1,59 @@
 # Projects content
 
-Each project is **one `.mdx` file** in this folder. The filename (minus `.mdx`)
-becomes the URL slug — e.g. `cool-project.mdx` → `/projects/cool-project`.
+A project = **structured metadata** (typed) + a **case-study body** (MDX prose).
+Metadata lives in `index.ts`; the story lives in a sibling `<slug>.mdx` file.
 
-## Format
+## Add a project (3 small edits)
 
-```mdx
----
-title: "Cool Project"
-summary: "One-line hook shown on the project card."
-role: "Lead Engineer"
-year: 2026
-tags: ["react", "typescript", "design"]
-cover: "/images/cool-project/cover.png"
-featured: true
----
+1. **Add an entry to `index.ts`** — one object in the `projects` array:
 
-Write the story in Markdown — headings, **bold**, images, code blocks.
+   ```ts
+   {
+     slug: "cool-project",              // becomes /projects/cool-project
+     title: "Cool Project",
+     hook: "One-line summary shown on the detail page.",
+     role: "Developer · Designer",
+     timeframe: "May 2025 · Hackathon",
+     tags: ["React", "TypeScript"],
+     category: "Full-Stack",            // optional outline badge
+     badge: "1st place",                // optional filled callout
+     layout: "notes",                   // detail layout (notes implemented)
+     stats: [{ value: "1st", label: "place · 40+ teams" }],  // optional
+     links: [{ label: "Live", href: "https://…" }],          // optional
+     images: [{ src: "/images/projects/cool-project/hero.jpg", alt: "…" }], // optional
+     featured: true,                    // surface in the experience vine's Projects
+   }
+   ```
 
-You can also embed custom React components for interactive flair:
+   Fields are typed by `ProjectMeta` in `index.ts` — the editor autocompletes them
+   and a typo/missing required field errors at build.
 
-<BeforeAfterSlider before="/images/cool-project/a.png" after="/images/cool-project/b.png" />
-```
+2. **Create `<slug>.mdx`** — the case study prose (no frontmatter; metadata is in
+   `index.ts`). Headings render as italic section titles:
 
-## Frontmatter fields
+   ```mdx
+   ## The spark
+   What it is and why I built it.
 
-| Field | Required | Notes |
-|---|---|---|
-| `title` | yes | Project name |
-| `summary` | yes | One-line hook for the card |
-| `role` | no | Your role on the project |
-| `year` | no | Year (number) |
-| `tags` | no | Array of strings; powers filtering |
-| `cover` | no | Path under `/public` for the card image |
-| `featured` | no | `true` to surface on the home page |
+   ## How I built it
+   The interesting parts. **Bold**, images, and code all work.
+   ```
 
-> Reusable creative components live in `src/components/projects/`.
-> For a one-off "showpiece" project, skip MDX and build a custom page at
-> `src/app/projects/<slug>/page.tsx` instead.
+3. **Register the body in `bodies.ts`** — one line mapping slug → MDX import:
+
+   ```ts
+   "cool-project": () => import("./cool-project.mdx"),
+   ```
+
+   (Kept explicit rather than a glob so the bundler statically resolves each import.)
+
+That's it — the project gets a static page at `/projects/<slug>`, and `featured`
+ones appear in the experience vine's Projects section.
+
+## Notes
+
+- Images go under `public/images/projects/<slug>/`; reference them in `images`.
+- `layout`: only `notes` is implemented; `editorial`/`rail` are reserved for a
+  future project that needs a different detail layout.
+- For a one-off "showpiece", skip MDX and build a custom route at
+  `src/app/projects/<slug>/page.tsx` instead.

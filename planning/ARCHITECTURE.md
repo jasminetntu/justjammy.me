@@ -1,11 +1,12 @@
 # Portfolio Website — Architecture & Plan
 
-> Last updated: 2026-06-26
-> Status: Planning → ready to scaffold
+> Last updated: 2026-07-22
+> Status: Built — Phases 1–5 complete, Phase 6 (polish) in progress
 
 This document captures the architecture, technology choices, and reasoning for
 the portfolio website. It's the single source of truth for *why* the project is
-built the way it is.
+built the way it is. Sections below marked with a **Reality check** note where the
+build intentionally diverged from the original plan.
 
 ---
 
@@ -41,6 +42,17 @@ built the way it is.
 > **Deferred / on-demand:** React Three Fiber (3D scenes) — only added if/when a
 > specific project needs it, to keep the site lean and fast.
 
+> **Reality check (what actually shipped):**
+> - **Styling** is Tailwind v4 with **custom components** (`components/ui`, `sections`) —
+>   shadcn/ui was not needed at this scale.
+> - **MDX** is used for **project case-study bodies only**; structured metadata is
+>   typed TS (see §3.3), not MDX frontmatter.
+> - **Animations**: Motion for route cross-fades + a hand-rolled **canvas FX engine**
+>   (`src/lib/canvas/`) for the ambient background — the bigger creative surface.
+> - **Deferred, not yet built:** the Resend contact endpoint (contact is links-only
+>   for now), Playwright e2e (Vitest unit tests only), Prettier (ESLint only), and the
+>   GitHub Actions CI workflow.
+
 ---
 
 ## 3. Key Architectural Decisions
@@ -66,11 +78,21 @@ The site is **mostly static pages** plus a **few serverless functions**.
   only for the dynamic bits (contact form, possibly view counts later).
 - Result: free at portfolio scale, nothing to maintain, still genuinely full-stack.
 
-### 3.3 Content: MDX files ("add a project = add a file")
+### 3.3 Content: typed registries (+ MDX for long-form project prose)
 
-Each project/experience is a single `.mdx` file in `src/content/`. MDX is
-Markdown **plus** JSX — so a file can be plain text *or* embed fully custom,
-interactive React components. Content lives in version control alongside the code.
+**Reality check:** the original plan was "one MDX file per project/experience with
+validated frontmatter." What shipped is cleaner and more type-safe:
+
+- Structured content is **typed TypeScript** in `src/content/` — `site.ts`,
+  `about.ts`, `experience.ts` (timeline + skills + certifications), `design/index.ts`
+  (piece registry), and `projects/index.ts` (project metadata). The types
+  autocomplete in the editor and error loudly at build on a typo.
+- **MDX** is used only for **project case-study bodies** — one `<slug>.mdx` of prose
+  per project, registered in `projects/bodies.ts`. MDX is Markdown **plus** JSX, so a
+  body can embed custom React components when a project wants interactive flair.
+
+Content lives in version control alongside the code; adding content can't break the
+app (it's separated from the machinery).
 
 ### 3.4 Project presentation: Hybrid
 
@@ -101,46 +123,40 @@ consistent default; bespoke pages are the escape hatch for maximum creativity.
 ```
 jasmine-tu-website-portfolio/
 ├── src/
-│   ├── app/                      # Pages & routes (App Router)
-│   │   ├── layout.tsx            # Shared shell: nav, footer, fonts
-│   │   ├── page.tsx              # Home
-│   │   ├── globals.css
+│   ├── app/                      # routes (App Router)
+│   │   ├── layout.tsx            # shared shell: fonts, canvas, header, metadata
+│   │   ├── page.tsx              # home (the constellation garden)
+│   │   ├── globals.css           # Tailwind v4 @theme tokens + base styles
 │   │   ├── about/page.tsx
-│   │   ├── projects/
-│   │   │   ├── page.tsx          # Project grid (lists all projects)
-│   │   │   └── [slug]/page.tsx   # One project page (renders the MDX)
-│   │   ├── experience/page.tsx   # Work / experience timeline
+│   │   ├── experience/page.tsx
+│   │   ├── design/page.tsx       # + design/[slug]/page.tsx  (piece detail)
+│   │   ├── projects/[slug]/page.tsx   # project detail (renders the MDX body)
 │   │   ├── contact/page.tsx
-│   │   └── api/
-│   │       └── contact/route.ts  # ← serverless contact endpoint
+│   │   ├── not-found.tsx         # on-brand 404
+│   │   ├── opengraph-image.tsx   # + twitter-image.tsx (branded share card)
+│   │   ├── sitemap.ts, robots.ts
+│   │   └── api/contact/          # reserved for the serverless endpoint (not built)
 │   │
 │   ├── components/
-│   │   ├── ui/                   # Primitives: Button, Card, Badge…
-│   │   ├── layout/               # Navbar, Footer, Container
-│   │   ├── sections/             # Hero, ProjectGrid, Timeline…
-│   │   └── projects/             # Reusable creative widgets
-│   │                             #   (sliders, scrollytelling, demos)
+│   │   ├── ui/                   # small shared pieces (back link, four-point star)
+│   │   ├── layout/               # canvas, fx provider, header, page transition
+│   │   └── sections/             # one component per page (garden, about, …)
 │   │
 │   ├── content/                  # ← YOUR DATA. This is what you edit.
-│   │   ├── projects/
-│   │   │   ├── cool-project.mdx
-│   │   │   └── another-thing.mdx
-│   │   └── experience/
-│   │       └── nvidia.mdx
+│   │   ├── site.ts, about.ts, experience.ts
+│   │   ├── design/index.ts       # design-piece registry
+│   │   └── projects/             # index.ts (metadata) + <slug>.mdx + bodies.ts
 │   │
-│   ├── lib/                      # Helpers (load content, utils)
-│   ├── styles/                   # Design tokens (colors, spacing, fonts)
-│   └── types/                    # Shared TypeScript types
+│   ├── lib/
+│   │   ├── canvas/               # ambient FX engine (washes, ribbon, particles)
+│   │   ├── design-wall.ts        # seeded non-overlapping wall layout
+│   │   └── theme.ts, views.ts, radial.ts, emphasis.ts, …
+│   └── types/                    # shared TypeScript types
 │
-├── public/images/                # Photos, logos, screenshots
-├── tests/                        # Playwright end-to-end tests
-├── docs/                         # Deeper architecture / how-to notes
-├── planning/                     # This file and other planning docs
-├── .github/workflows/ci.yml      # Auto lint/test on push
-├── tailwind.config.ts
-├── next.config.mjs
-├── tsconfig.json
-└── package.json
+├── public/images/                # photos, logos, screenshots
+├── tests/                        # Vitest unit tests (pure logic)
+├── planning/                     # ARCHITECTURE.md (this file) + BUILD-PLAN.md
+├── next.config.ts, tsconfig.json, package.json
 ```
 
 **Mental model:** everything in `src/app` and `src/components` is the *machinery*
@@ -151,39 +167,28 @@ day, you'll mostly just drop files into `content/`.
 
 ## 5. The "Add a Project" Workflow
 
-To add a new project, create **one file** — `src/content/projects/my-new-thing.mdx`:
+**Reality check:** metadata is typed TS, so adding a project is three small edits
+(not one MDX file). Full walkthrough in `src/content/projects/README.md`; in short:
 
-```mdx
----
-title: "My New Thing"
-summary: "A one-line hook for the project card."
-role: "Lead Engineer"
-year: 2026
-tags: ["react", "typescript", "design"]
-cover: "/images/my-new-thing/cover.png"
-featured: true
----
+1. Add a typed entry to the `projects` array in `src/content/projects/index.ts`
+   (slug, title, hook, role, tags, `featured`, …).
+2. Create the case-study body `src/content/projects/<slug>.mdx` (prose only).
+3. Register it in `src/content/projects/bodies.ts` (one `slug → import` line).
 
-Write the full story here in Markdown — **bold text**, images,
-code blocks, embedded video, whatever you want.
+The project then gets a static page at `/projects/<slug>`, and `featured` ones
+surface in the experience vine's Projects section. Design pieces are even simpler —
+one typed entry in `src/content/design/index.ts` (wall position auto-resolves).
 
-<BeforeAfterSlider before="/a.png" after="/b.png" />   {/* a custom widget */}
-```
-
-That file **automatically**:
-- appears as a card in the `/projects` grid,
-- gets its own page at `/projects/my-new-thing`,
-- shows up in tag filters and "featured" sections.
-
-No code changes required. Experiences in `content/experience/` work the same way.
+Experience content (roles, skills, certifications) is edited directly in the typed
+arrays in `src/content/experience.ts`.
 
 ---
 
 ## 6. How the Goals Are Met
 
 - **Scalable** — content is separated from code; adding content can't break the app.
-- **Type-safe** — MDX frontmatter is validated, so a typo errors loudly instead of
-  silently breaking a page.
+- **Type-safe** — content is typed TypeScript, so a typo or missing required field
+  errors loudly at build instead of silently breaking a page.
 - **Maintainable** — a shared component library means redesign once, update everywhere.
 - **Professional** — CI runs on every push and catches broken builds before they ship.
 - **Creative** — a `components/projects/` widget library + bespoke showpiece pages
@@ -192,15 +197,10 @@ No code changes required. Experiences in `content/experience/` work the same way
 
 ---
 
-## 7. Build Plan (next steps)
+## 7. Build Plan
 
-1. Scrap CRA; scaffold Next.js + TypeScript + Tailwind + ESLint (App Router, `src/`).
-2. Add MDX content pipeline + typed frontmatter validation.
-3. Create folder structure with a sample project and a sample experience.
-4. Build the layout shell (Navbar, Footer) and core pages (Home, Projects, About,
-   Experience, Contact).
-5. Add Motion for animations + a starter `components/projects/` widget.
-6. Wire up the serverless contact endpoint (Resend).
-7. Set up Vitest + Playwright + a GitHub Actions CI workflow.
-8. Deploy to Vercel and connect the custom domain.
-9. Write `docs/` how-to notes (esp. "how to add a project").
+The original scaffold plan is done. See **`planning/BUILD-PLAN.md`** for the
+phase-by-phase status, what shipped, and noted deviations.
+
+Not yet built (deferred): the serverless contact endpoint (Resend), Playwright e2e,
+a GitHub Actions CI workflow, and connecting a custom domain on deploy.

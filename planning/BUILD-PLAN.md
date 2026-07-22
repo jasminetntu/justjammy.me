@@ -94,9 +94,29 @@ Two-column letter from typed `site.ts` (email/linkedin/github/resume + location)
 - **Instagram** intentionally NOT here (kept exclusive to Design).
 - Backlog (not yet built): a greeting-cycle hint + other "fill the space" polish.
 
-### ⏳ Phase 6 — Polish
-Per-route metadata, favicon / OG image, `README` + this doc + `ARCHITECTURE.md`
-sync, prune leftovers, final full-verification sweep.
+### ⏳ Phase 6 — Polish (in progress)
+Done so far:
+- **Mobile:** every section reworked for phones (experience stacks with a
+  collapsible skills/certs toggle; design grid + wall; about reorder + star-stack
+  highlights; contact left-aligned links). Tap feedback on touch (no hover) for
+  home stars, contact greeting, and the kaomoji.
+- **SEO / metadata:** root title template (`%s · Jasmine Tu`) + per-route titles
+  and descriptions; branded 1200×630 **Open Graph / Twitter share card** generated
+  with `next/og` (mirrors the home garden wash + ribbon); `sitemap.xml` (from the
+  content arrays) + `robots.txt`; `metadataBase` from a resolved `siteUrl`.
+- **Accessibility:** honor `prefers-reduced-motion` (freeze canvas washes/ribbon,
+  drop sparkles/shooting-stars/parallax, rest home stars, stop tagline rotation);
+  page-level `h1` on about + design; keyboard-operable greeting + kaomoji;
+  on-brand focus-visible ring; deepened faint text tokens for contrast.
+- **Cleanup:** removed the center sparkle burst on navigation (fade only) and
+  pruned the dead burst code; synced `README`, `ARCHITECTURE.md`, and the content
+  READMEs to the real (typed-registry + MDX-body) model.
+
+Remaining:
+- Favicon (Jasmine is designing it).
+- Final full-verification sweep.
+- **Content (not code):** `public/jasmine-tu-resume.pdf`; real artwork + copy for
+  design pieces and project case studies.
 
 ---
 

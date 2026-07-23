@@ -8,6 +8,8 @@ import { site } from "@/content/site";
 export const alt = "Jasmine Tu — software engineer & designer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+// generated at build (fonts fetched then) so it exports as a static png
+export const dynamic = "force-static";
 
 // garden wash from src/lib/canvas/wash.ts flattened to CSS radial-gradients
 // (positions × 1200/630, radii × 1200; each blob fades a→a*.4→0 like the canvas);

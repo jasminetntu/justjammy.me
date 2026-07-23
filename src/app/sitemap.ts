@@ -4,6 +4,9 @@ import { pieces } from "@/content/design";
 import { projects } from "@/content/projects";
 import { siteUrl } from "@/content/site";
 
+// emit a static sitemap.xml for the export
+export const dynamic = "force-static";
+
 // generated at build — reads the same content arrays as the pages, so new
 // design pieces / projects appear automatically; absolute URLs via siteUrl
 export default function sitemap(): MetadataRoute.Sitemap {

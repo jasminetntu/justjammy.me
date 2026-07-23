@@ -1,0 +1,11 @@
+# serve the exported next.js 404 page on unknown routes
+ErrorDocument 404 /404.html
+
+# next/og share images export as extension-less files — force their mime type
+# so social scrapers accept them
+<Files "opengraph-image">
+  ForceType image/png
+</Files>
+<Files "twitter-image">
+  ForceType image/png
+</Files>

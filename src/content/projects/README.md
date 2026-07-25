@@ -1,5 +1,9 @@
 # Projects content
 
+> **New here / want the plain-English walkthrough?** See
+> [`docs/adding-content.md`](../../../docs/adding-content.md) — step-by-step for
+> projects *and* artwork, no coding background needed.
+
 A project = **structured metadata** (typed) + a **case-study body** (MDX prose).
 Metadata lives in `index.ts`; the story lives in a sibling `<slug>.mdx` file.
 

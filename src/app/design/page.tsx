@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
+import { ComingSoon } from "@/components/sections/coming-soon";
 import { DesignGallery } from "@/components/sections/design-gallery";
+import { comingSoon } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Design",
@@ -8,5 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function DesignPage() {
+  if (comingSoon.design) return <ComingSoon eyebrow="design" />;
   return <DesignGallery />;
 }

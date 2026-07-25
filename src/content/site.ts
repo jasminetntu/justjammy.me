@@ -20,6 +20,14 @@ export const site = {
   availability: "Open to internships & flexible roles",
 } as const;
 
+// flip a flag to true to show an on-brand "coming soon" state instead of the
+// placeholder content — /design shows a coming-soon page, and the experience
+// vine's Projects section shows "blooming soon" (detail routes stop building)
+export const comingSoon = {
+  design: true,
+  projects: true,
+} as const;
+
 // rotating subtitle on the home page (cross-fades every ~5.2s)
 export const taglines = [
   "software engineer & designer",

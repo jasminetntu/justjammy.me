@@ -17,6 +17,7 @@ import {
   type TimelineSection,
 } from "@/content/experience";
 import { featuredProjects, type ProjectMeta } from "@/content/projects";
+import { comingSoon } from "@/content/site";
 import { ease } from "@/lib/theme";
 
 // fades a block in when it scrolls into view; `delay` staggers siblings that
@@ -67,7 +68,8 @@ function Reveal({
 // two-column layout — fixed identity sidebar (back · title · currently · skills ·
 // featured projects) + scrolling "growing stem" timeline on the right
 export function ExperienceVine() {
-  const projects = featuredProjects();
+  // coming-soon toggle → empty list falls through to the "blooming soon" state
+  const projects = comingSoon.projects ? [] : featuredProjects();
   const scrollRef = useRef<HTMLDivElement>(null);
   // mobile-only: skills + certs collapse so the work timeline surfaces first
   const [skillsOpen, setSkillsOpen] = useState(false);

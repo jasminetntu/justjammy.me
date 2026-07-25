@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ProjectDetail } from "@/components/sections/project-detail";
 import { projectBodies } from "@/content/projects/bodies";
 import { getProject, projects } from "@/content/projects";
+import { comingSoon } from "@/content/site";
 
 interface Params {
   params: Promise<{ slug: string }>;
@@ -15,6 +16,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  if (comingSoon.projects) return {};
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
@@ -25,6 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function ProjectPage({ params }: Params) {
+  if (comingSoon.projects) notFound(); // detail hidden while projects are coming soon
   const { slug } = await params;
   const project = getProject(slug);
   const loadBody = projectBodies[slug];

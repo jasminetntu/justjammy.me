@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { PieceDetail } from "@/components/sections/piece-detail";
 import { getPiece, pieces } from "@/content/design";
+import { comingSoon } from "@/content/site";
 
 interface Params {
   params: Promise<{ slug: string }>;
@@ -14,6 +15,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  if (comingSoon.design) return {};
   const { slug } = await params;
   const piece = getPiece(slug);
   if (!piece) return {};
@@ -24,6 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function PiecePage({ params }: Params) {
+  if (comingSoon.design) notFound(); // detail hidden while the section is coming soon
   const { slug } = await params;
   const piece = getPiece(slug);
   if (!piece) notFound();

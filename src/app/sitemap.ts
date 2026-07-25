@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { pieces } from "@/content/design";
 import { projects } from "@/content/projects";
-import { siteUrl } from "@/content/site";
+import { comingSoon, siteUrl } from "@/content/site";
 
 // emit a static sitemap.xml for the export
 export const dynamic = "force-static";
@@ -17,15 +17,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
   }));
 
-  const designRoutes = pieces.map((p) => ({
-    url: `${siteUrl}/design/${p.slug}`,
-    lastModified: now,
-  }));
+  // skip detail URLs for coming-soon sections (those routes 404)
+  const designRoutes = comingSoon.design
+    ? []
+    : pieces.map((p) => ({ url: `${siteUrl}/design/${p.slug}`, lastModified: now }));
 
-  const projectRoutes = projects.map((p) => ({
-    url: `${siteUrl}/projects/${p.slug}`,
-    lastModified: now,
-  }));
+  const projectRoutes = comingSoon.projects
+    ? []
+    : projects.map((p) => ({ url: `${siteUrl}/projects/${p.slug}`, lastModified: now }));
 
   return [...staticRoutes, ...designRoutes, ...projectRoutes];
 }

@@ -1,4 +1,4 @@
-# Jasmine Tu — Portfolio
+# justjammy.me
 
 My little corner of the internet! (˶˃ ᵕ ˂˶) .ᐟ.ᐟ
 

@@ -205,7 +205,7 @@ export function ExperienceVine() {
                 {projects.length === 0 ? (
                   <Reveal className="mt-5">
                     <span className="font-serif text-[15px] italic text-[#a493c6]">
-                      case studies blooming soon ✦
+                      Coming soon.
                     </span>
                   </Reveal>
                 ) : (

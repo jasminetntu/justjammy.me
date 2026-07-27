@@ -1,12 +1,8 @@
-# Adding content (no AI needed)
+# Adding content
 
-A step-by-step guide for the things you'll do over and over: add a **project**,
-add a **design piece / artwork**, reveal a section, swap the resume. Every file
-path is exact, and every step is copy-paste.
+A step-by-step guide for: adding a **project**, adding a **design piece / artwork**, revealing a section, and swapping the resume. Every file path is exact, and every step is copy-paste.
 
-> **Preview as you go:** run `npm run dev` and open http://localhost:3000. It
-> live-reloads on save, so you see changes instantly. To publish, see the last
-> section.
+> **Preview as you go:** run `npm run dev` and open http://localhost:3000. It live-reloads on save, so you see changes instantly. To publish, see the last section.
 
 Where content lives:
 
@@ -28,9 +24,7 @@ A project = **one entry of info** + **one write-up file** + **one line to link t
 
 ### Step 1 — add the info
 
-Open `src/content/projects/index.ts`. Copy an existing entry in the `projects`
-array and edit it. Only `slug, title, hook, role, timeframe, tags, layout` are
-required; the rest are optional.
+Open `src/content/projects/index.ts`. Copy an existing entry in the `projects` array and edit it. Only `slug, title, hook, role, timeframe, tags, layout` are required; the rest are optional.
 
 ```ts
 {
@@ -51,8 +45,7 @@ required; the rest are optional.
 
 ### Step 2 — write the story
 
-Create a new file `src/content/projects/my-project.mdx` (the name **must match the
-slug**). Write in Markdown. Headings become italic section titles:
+Create a new file `src/content/projects/my-project.mdx` (the name **must match the slug**). Write in Markdown. Headings become italic section titles:
 
 ```mdx
 ## The spark
@@ -81,8 +74,7 @@ images: [
 ],
 ```
 
-✅ **Checklist:** entry in `index.ts` → `my-project.mdx` file → line in `bodies.ts`
-→ (optional) images. The project now has a page at `/projects/my-project`.
+✅ **Checklist:** entry in `index.ts` → `my-project.mdx` file → line in `bodies.ts` → (optional) images. The project now has a page at `/projects/my-project`.
 
 ---
 
@@ -111,27 +103,21 @@ in the `pieces` array.
 },
 ```
 
-> **Tip — no cropping:** set `size` and `gridHeight` to roughly match your image's
-> shape. Tall image → taller numbers; wide image → set `w` bigger than `h` and a
-> smaller `gridHeight`.
+> **Tip — no cropping:** set `size` and `gridHeight` to roughly match your image's shape. Tall image → taller numbers; wide image → set `w` bigger than `h` and a smaller `gridHeight`.
 
 ### Without artwork yet (placeholder)
 
-Leave off `image` and pick a `gradient` from the `G` palette at the top of the file
-(`G.pink`, `G.portrait`, `G.web`, `G.motion`, …). It shows a soft color tile until
-you add art.
+Leave off `image` and pick a `gradient` from the `G` palette at the top of the file (`G.pink`, `G.portrait`, `G.web`, `G.motion`, …). It shows a soft color tile until you add art.
 
 You don't place pieces on the wall — positions are automatic and never overlap.
 
-✅ **Checklist:** image in `public/images/design/<slug>/` → one entry in
-`index.ts` with `image`. Done.
+✅ **Checklist:** image in `public/images/design/<slug>/` → one entry in `index.ts` with `image`. Done.
 
 ---
 
 ## 3. Reveal a section (turn off "coming soon")
 
-Right now `/design` and the Projects section show **"coming soon"**. When your
-content is ready, open `src/content/site.ts` and flip the flag(s):
+Right now `/design` and the Projects section show **"coming soon"**. When your content is ready, open `src/content/site.ts` and flip the flag(s):
 
 ```ts
 export const comingSoon = {
@@ -140,15 +126,13 @@ export const comingSoon = {
 } as const;
 ```
 
-They're independent — reveal one and keep the other hidden if you like.
+They're independent — reveal one and keep the other hidden.
 
 ---
 
 ## 4. Swap the resume
 
-Save your resume as `public/jasmine-tu-resume.pdf` (that exact name). The contact
-page's "resume" link points to it automatically. (Different name? update `resume`
-in `src/content/site.ts`.)
+Save your resume as `public/jasmine-tu-resume.pdf` (that exact name). The contact page's "resume" link points to it automatically. (Different name? update `resume` in `src/content/site.ts`.)
 
 ---
 
@@ -166,6 +150,4 @@ npm run dev      # then open http://localhost:3000
 npm run build    # creates an "out" folder
 ```
 
-Then upload **everything inside the `out/` folder** to `public_html` in Hostinger's
-File Manager (hPanel). That's the whole site. (First real build: set your domain so
-share links are correct — see `README.md` / the deploy notes.)
+Then upload **everything inside the `out/` folder** to `public_html` in Hostinger's File Manager (hPanel). That's the whole site. (First real build: set your domain so share links are correct — see `README.md` / the deploy notes.)

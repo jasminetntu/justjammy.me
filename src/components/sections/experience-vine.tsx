@@ -82,7 +82,7 @@ export function ExperienceVine() {
     <main className="min-h-dvh md:fixed md:inset-0 md:flex md:overflow-hidden">
       {/* ── sidebar ── */}
       <aside
-        className="flex flex-col bg-[linear-gradient(to_bottom,rgba(255,255,255,.32)_72%,rgba(255,255,255,0))] px-[clamp(28px,3vw,40px)] pb-6 pt-[92px] md:h-full md:overflow-y-auto md:border-r md:border-[rgba(154,127,107,.14)] md:bg-white/30 md:bg-none md:pb-9 md:pt-[76px] md:backdrop-blur-[3px]"
+        className="flex flex-col bg-[linear-gradient(to_bottom,rgba(255,255,255,.32)_72%,rgba(255,255,255,0))] px-[clamp(28px,3vw,40px)] pb-6 pt-24 md:h-full md:overflow-y-auto md:border-r md:border-[rgba(154,127,107,.14)] md:bg-white/30 md:bg-none md:pb-9 md:backdrop-blur-[3px]"
         style={{ flex: "0 0 clamp(356px,35vw,476px)" }}
       >
         <div className="mb-2.5 mt-2">
@@ -123,6 +123,9 @@ export function ExperienceVine() {
           />
           <span className="font-serif text-[13px] uppercase italic tracking-[.16em] text-[#7a8a5f]">
             Skills &amp; Certifications
+          </span>
+          <span className="font-serif ml-auto text-[13px] italic text-[#a89a86]">
+            {skillsOpen ? "hide" : "show"}
           </span>
         </button>
 
@@ -167,7 +170,7 @@ export function ExperienceVine() {
                 rel="noopener noreferrer"
                 className="group block"
               >
-                <div className="text-[13.5px] font-medium leading-snug text-ink-dark transition-colors group-hover:text-green-deep">
+                <div className="text-[13.5px] font-medium leading-snug text-ink-dark transition-colors group-hover:text-green-deep max-md:group-active:text-green-deep">
                   {c.name}
                 </div>
                 <div className="font-serif text-[12.5px] italic text-[#a89a86]">
@@ -285,7 +288,7 @@ function ProjectCard({ project, index }: { project: ProjectMeta; index: number }
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl shadow-[0_6px_20px_rgba(90,66,140,.1)] transition-[transform,box-shadow] duration-[450ms] hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(90,66,140,.22)]"
+      className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl shadow-[0_6px_20px_rgba(90,66,140,.1)] transition-[transform,box-shadow] duration-[450ms] hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(90,66,140,.22)] max-md:active:-translate-y-1 max-md:active:shadow-[0_18px_40px_rgba(90,66,140,.22)]"
       style={{ transitionTimingFunction: ease.soft }}
     >
       {/* image or gradient fill */}
@@ -298,11 +301,11 @@ function ProjectCard({ project, index }: { project: ProjectMeta; index: number }
       {/* base tint: darkens toward the bottom for title legibility */}
       <div className="absolute inset-0 bg-gradient-to-t from-[rgba(46,32,60,.42)] via-[rgba(46,32,60,.08)] to-transparent" />
       {/* hover tint: soft purple wash over the whole tile */}
-      <div className="absolute inset-0 bg-[rgba(90,66,140,.42)] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-[rgba(90,66,140,.42)] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100 max-md:group-active:opacity-100" />
 
       {/* badges stack top-right: primary award on top, secondary category below */}
       {(project.badge || project.category) && (
-        <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5 transition-opacity duration-300 group-hover:opacity-0">
+        <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5 transition-opacity duration-300 group-hover:opacity-0 max-md:group-active:opacity-0">
           {project.badge && (
             <span className="inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11.5px] font-medium text-[#6f5ba0] shadow-sm backdrop-blur-sm">
               <FourPointStar size={10} color="#9a7bbf" style={{ filter: "none" }} />
@@ -318,14 +321,14 @@ function ProjectCard({ project, index }: { project: ProjectMeta; index: number }
       )}
 
       {/* title — fades out on hover */}
-      <div className="relative z-[5] p-4 transition-opacity duration-300 group-hover:opacity-0">
+      <div className="relative z-[5] p-4 transition-opacity duration-300 group-hover:opacity-0 max-md:group-active:opacity-0">
         <div className="text-[17px] font-semibold leading-tight text-white [text-shadow:0_1px_10px_rgba(0,0,0,.45)]">
           {project.title}
         </div>
       </div>
 
       {/* description — fades in on hover, centered */}
-      <div className="absolute inset-0 z-[6] flex items-center justify-center p-5 opacity-0 transition-opacity duration-[350ms] group-hover:opacity-100">
+      <div className="absolute inset-0 z-[6] flex items-center justify-center p-5 opacity-0 transition-opacity duration-[350ms] group-hover:opacity-100 max-md:group-active:opacity-100">
         <p className="text-center text-[13.5px] font-medium leading-snug text-white [text-shadow:0_1px_10px_rgba(0,0,0,.45)]">
           {project.hook}
         </p>

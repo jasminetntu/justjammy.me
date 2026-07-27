@@ -283,7 +283,7 @@ export function DesignGallery() {
               style={{ willChange: "transform" }}
             >
               {/* the framed piece */}
-              <div className="rounded-[2px] bg-white p-[11px_11px_30px] shadow-[0_12px_30px_rgba(154,90,120,.16),0_2px_6px_rgba(154,90,120,.12)] transition-shadow duration-500 group-hover:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)]">
+              <div className="rounded-[2px] bg-white p-[11px_11px_30px] shadow-[0_12px_30px_rgba(154,90,120,.16),0_2px_6px_rgba(154,90,120,.12)] transition-shadow duration-500 group-hover:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)] max-md:group-active:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)]">
                 <div
                   className="relative overflow-hidden rounded-[1px]"
                   style={{ width: l.w, height: l.h, background: p.image ? undefined : p.gradient }}
@@ -305,7 +305,7 @@ export function DesignGallery() {
                 </div>
               </div>
               {/* caption blooms in on hover */}
-              <div className="pointer-events-none absolute inset-x-0 top-full mt-[11px] translate-y-[-4px] text-center opacity-0 transition-[opacity,transform] duration-[450ms] group-hover:translate-y-0 group-hover:opacity-100">
+              <div className="pointer-events-none absolute inset-x-0 top-full mt-[11px] translate-y-[-4px] text-center opacity-0 transition-[opacity,transform] duration-[450ms] group-hover:translate-y-0 group-hover:opacity-100 max-md:group-active:translate-y-0 max-md:group-active:opacity-100">
                 <div className="font-serif text-[18px] text-[#6b4358]">{p.title}</div>
                 <div className="font-serif text-[13px] italic text-[#b07a97]">
                   {p.medium} · {p.year}
@@ -329,7 +329,7 @@ export function DesignGallery() {
                   onClick={(e) => {
                     burst(e.clientX, e.clientY, "#dd8fb6", 14, "#ffffff");
                   }}
-                  className="group relative mb-6 block cursor-pointer overflow-hidden break-inside-avoid rounded-[14px] shadow-[0_8px_24px_rgba(154,90,120,.12)] transition-[transform,box-shadow] duration-500 hover:-translate-y-[5px] hover:shadow-[0_18px_42px_rgba(154,90,120,.22)]"
+                  className="group relative mb-6 block cursor-pointer overflow-hidden break-inside-avoid rounded-[14px] shadow-[0_8px_24px_rgba(154,90,120,.12)] transition-[transform,box-shadow] duration-500 hover:-translate-y-[5px] hover:shadow-[0_18px_42px_rgba(154,90,120,.22)] max-md:active:-translate-y-[5px] max-md:active:shadow-[0_18px_42px_rgba(154,90,120,.22)]"
                 >
                   <div
                     className="relative w-full"
@@ -345,7 +345,7 @@ export function DesignGallery() {
                       />
                     )}
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(90,40,60,.46)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100">
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(90,40,60,.46)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100 max-md:group-active:opacity-100">
                     <div className="font-serif text-[20px] text-white">{p.title}</div>
                     <div className="font-serif text-[13px] italic text-white/85">
                       {p.medium} · {p.year}
@@ -361,7 +361,7 @@ export function DesignGallery() {
       {/* back + eyebrow — top left, below the header; mobile lines up with the
           page edge (matching about's left padding), desktop shifts right to
           clear the J monogram */}
-      <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-[110px] z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
+      <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-24 z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
         <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
         <h1 className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
@@ -392,7 +392,7 @@ export function DesignGallery() {
         target="_blank"
         rel="noopener noreferrer"
         title="@jammydoodlez"
-        className="absolute bottom-7 right-[clamp(20px,4vw,44px)] z-[6] inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] text-pink-deep shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-transform duration-300 hover:scale-110 hover:-rotate-[4deg]"
+        className="absolute bottom-7 right-[clamp(20px,4vw,44px)] z-[6] inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] text-pink-deep shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-transform duration-300 hover:scale-110 hover:-rotate-[4deg] max-md:active:scale-110 max-md:active:-rotate-[4deg]"
       >
         <svg
           width="18"

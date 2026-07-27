@@ -83,14 +83,14 @@ export function ContactLetter() {
   };
 
   return (
-    <main className="flex min-h-dvh items-center justify-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
+    <main className="relative flex min-h-dvh items-center justify-center overflow-y-auto px-[clamp(24px,5vw,60px)] py-20">
+      <div className="absolute left-[clamp(24px,5vw,60px)] top-24">
+        <BackLink href="/" label="back" />
+      </div>
       <PagePanel className="w-full max-w-[1120px]">
         <div className="grid grid-cols-1 items-end gap-[clamp(38px,6vw,76px)] md:[grid-template-columns:1.4fr_.6fr]">
           {/* left — the letter */}
           <div className="text-left">
-            <div className="mb-[18px]">
-              <BackLink href="/" label="back" />
-            </div>
             <h1 className="font-script m-0 mb-[18px] text-[clamp(60px,8vw,92px)] leading-[.9] text-ink">
               say{" "}
               <span
@@ -166,14 +166,14 @@ export function ContactLetter() {
                   title={row.copy ? "click to copy" : undefined}
                   target={row.external ? "_blank" : undefined}
                   rel={row.external ? "noopener noreferrer" : undefined}
-                  className="group text-left text-[15px] text-ink-dark transition-colors duration-300 hover:text-pink-deep md:text-right md:text-[17px]"
+                  className="group text-left text-[15px] text-ink-dark transition-colors duration-300 hover:text-pink-deep max-md:active:text-pink-deep md:text-right md:text-[17px]"
                 >
                   <span className="relative inline-block pb-[3px]">
                     {row.copy && copied ? "copied ✦" : row.value}
                     {/* gradient underline draws in from the left on hover */}
                     <span
                       aria-hidden
-                      className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100"
+                      className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100 max-md:group-active:scale-x-100"
                       style={{
                         background:
                           "linear-gradient(90deg, #efc3d9 0%, #efc3d9 40%, rgba(239,195,217,0) 100%)",

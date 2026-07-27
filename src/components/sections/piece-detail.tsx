@@ -9,7 +9,7 @@ import type { DesignPiece } from "@/content/design";
 // taped in like a gallery print with a short write-up
 export function PieceDetail({ piece }: { piece: DesignPiece }) {
   return (
-    <main className="mx-auto max-w-[880px] px-[clamp(20px,4vw,40px)] pb-[90px] pt-[104px]">
+    <main className="mx-auto max-w-[880px] px-[clamp(20px,4vw,40px)] pb-[90px] pt-24">
       <PagePanel>
         <div className="mb-3">
           <BackLink href="/design" label="Design" className="text-[17px] text-pink-deep" />
@@ -56,7 +56,7 @@ export function PieceDetail({ piece }: { piece: DesignPiece }) {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-serif text-[15px] italic text-pink-deep transition-opacity hover:opacity-70"
+                  className="font-serif text-[15px] italic text-pink-deep transition-opacity hover:opacity-70 max-md:active:opacity-70"
                 >
                   {link.label} ↗
                 </a>

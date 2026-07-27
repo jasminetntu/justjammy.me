@@ -34,8 +34,7 @@ export const taglines = [
   "previously at NVIDIA & Google Cloud",
   "studying C.S. at UC Irvine",
   "your favorite woman in tech",
-  "collector of trinkets",
-  "fueled by matcha & curiosity",
+  "trinket & matcha collector",
 ] as const;
 
 // four corner stars of the constellation garden

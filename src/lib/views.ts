@@ -13,11 +13,12 @@ export const VIEWS = [
 export type View = (typeof VIEWS)[number];
 
 export function pathToView(pathname: string): View {
-  if (pathname === "/about") return "about";
-  if (pathname === "/experience") return "experience";
-  if (pathname === "/projects" || pathname.startsWith("/projects/")) return "project";
-  if (pathname === "/design") return "design";
-  if (pathname.startsWith("/design/")) return "piece";
-  if (pathname === "/contact") return "contact";
+  const path = pathname.replace(/\/+$/, "") || "/";
+  if (path === "/about") return "about";
+  if (path === "/experience") return "experience";
+  if (path === "/projects" || path.startsWith("/projects/")) return "project";
+  if (path === "/design") return "design";
+  if (path.startsWith("/design/")) return "piece";
+  if (path === "/contact") return "contact";
   return "garden";
 }

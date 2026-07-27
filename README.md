@@ -1,4 +1,4 @@
-# justjammy.me
+# <img src="src/app/icon.svg" width="30" height="30" alt="justjammy.me logo"> [justjammy.me](justjammy.me)
 
 My little corner of the internet! (˶˃ ᵕ ˂˶) .ᐟ.ᐟ
 

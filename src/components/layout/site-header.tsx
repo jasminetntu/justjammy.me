@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -110,12 +111,10 @@ export function SiteHeader() {
       <Link
         href="/"
         aria-label="home"
-        className="flex h-[46px] w-[46px] items-center justify-center rounded-full border border-[rgba(154,127,107,.22)] bg-white/50 shadow-[0_6px_18px_rgba(154,127,107,.12)] transition-[transform,box-shadow] duration-500 hover:-rotate-[4deg] hover:scale-[1.08] hover:shadow-[0_10px_24px_rgba(154,127,107,.2)]"
+        className="flex h-[46px] w-[46px] items-center justify-center transition-transform duration-500 hover:-rotate-[4deg] hover:scale-[1.08] max-md:active:-rotate-[4deg] max-md:active:scale-[1.08]"
         style={{ transitionTimingFunction: ease.soft }}
       >
-        <span className="font-script -mt-0.5 text-[30px] leading-none text-ink">
-          J
-        </span>
+        <Image src="/images/logo.svg" alt="home" width={40} height={40} priority />
       </Link>
 
       {/* keyed by pathname so the bloom closes itself on navigation */}
@@ -171,8 +170,8 @@ function RadialMenu({ view }: { view: View }) {
             <span
               className={
                 petal.side === "left"
-                  ? "font-serif pointer-events-none absolute right-full top-1/2 -translate-x-[6px] -translate-y-1/2 whitespace-nowrap text-[13px] italic opacity-0 transition-[opacity,transform] duration-[400ms] group-hover:-translate-x-[9px] group-hover:opacity-100"
-                  : "font-serif pointer-events-none absolute left-1/2 top-full -translate-x-1/2 translate-y-[2px] whitespace-nowrap text-[13px] italic opacity-0 transition-[opacity,transform] duration-[400ms] group-hover:translate-y-[5px] group-hover:opacity-100"
+                  ? "font-serif pointer-events-none absolute right-full top-1/2 -translate-x-[6px] -translate-y-1/2 whitespace-nowrap text-[13px] italic opacity-0 transition-[opacity,transform] duration-[400ms] group-hover:-translate-x-[9px] group-hover:opacity-100 max-md:group-active:-translate-x-[9px] max-md:group-active:opacity-100"
+                  : "font-serif pointer-events-none absolute left-1/2 top-full -translate-x-1/2 translate-y-[2px] whitespace-nowrap text-[13px] italic opacity-0 transition-[opacity,transform] duration-[400ms] group-hover:translate-y-[5px] group-hover:opacity-100 max-md:group-active:translate-y-[5px] max-md:group-active:opacity-100"
               }
             >
               {petal.label}
@@ -184,7 +183,7 @@ function RadialMenu({ view }: { view: View }) {
       <button
         aria-label="menu"
         aria-expanded={open}
-        className="absolute right-0 top-0 z-[3] flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-transform duration-[550ms] hover:scale-[1.07]"
+        className="absolute right-0 top-0 z-[3] flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-transform duration-[550ms] hover:scale-[1.07] max-md:active:scale-[1.07]"
         style={{ transitionTimingFunction: ease.soft }}
         onClick={(e) => {
           e.stopPropagation();

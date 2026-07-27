@@ -11,7 +11,7 @@ export function BackLink({ href = "/", label = "back", className = "text-ink-fai
   return (
     <Link
       href={href}
-      className={`font-serif inline-flex items-center gap-[7px] text-[14px] italic tracking-[.1em] transition-[transform,opacity] duration-300 hover:-translate-x-1 hover:opacity-70 ${className}`}
+      className={`font-serif inline-flex items-center gap-[7px] text-[14px] italic tracking-[.1em] transition-[transform,opacity] duration-300 hover:-translate-x-1 hover:opacity-70 max-md:active:-translate-x-1 max-md:active:opacity-70 ${className}`}
     >
       <svg
         width={12}

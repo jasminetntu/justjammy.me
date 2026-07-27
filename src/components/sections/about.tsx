@@ -32,23 +32,23 @@ function Emphasized({ text }: { text: string }) {
 
 export function About() {
   return (
-    <main className="mx-auto max-w-[1020px] px-[clamp(24px,5vw,60px)] pb-[90px] pt-32">
-      <PagePanel>
-        <div className="mb-3.5">
-          <BackLink />
-        </div>
+    <main className="relative pb-[90px] pt-24 md:pb-10">
+      <div className="absolute left-[clamp(24px,5vw,60px)] top-24 flex flex-col items-start gap-2">
+        <BackLink />
         <h1 className="font-serif text-[17px] italic uppercase tracking-[.18em] text-pink-soft">about</h1>
-
+      </div>
+      <div className="mx-auto max-w-[1100px] px-[clamp(24px,5vw,60px)] pt-14">
+      <PagePanel>
         {/* explicit grid placement — desktop stays two-column (Hello + text
             left, portrait right); mobile flows portrait + badges → Hello →
             description */}
-        <div className="mt-[18px] grid grid-cols-1 items-start gap-x-[clamp(28px,5vw,64px)] md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 items-start gap-x-[clamp(28px,5vw,64px)] md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
           <h2 className="font-serif order-2 mb-[.5em] text-[clamp(30px,4vw,52px)] font-medium leading-[1.08] text-ink-dark md:col-start-1 md:row-start-1">
             Hello! <Kaomoji />
           </h2>
 
           <div className="order-1 mb-8 md:order-none md:col-start-2 md:row-span-2 md:row-start-1 md:mb-0">
-            <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-[200px_200px_18px_18px] border border-[rgba(154,127,107,.18)] bg-gradient-to-br from-[#fbe7f0] to-[#eef4e6] shadow-[0_18px_50px_rgba(154,127,107,.18)]">
+            <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-[200px_200px_18px_18px] border border-[rgba(154,127,107,.18)] bg-gradient-to-br from-[#fbe7f0] to-[#eef4e6] shadow-[0_18px_50px_rgba(154,127,107,.18)] md:ml-auto md:w-[clamp(220px,32vh,300px)]">
               {about.portrait ? (
                 <Image
                   src={about.portrait}
@@ -66,7 +66,7 @@ export function About() {
                 </span>
               )}
             </div>
-            <div className="mt-[18px] flex flex-wrap gap-[7px]">
+            <div className="mt-[18px] flex flex-wrap gap-[7px] md:ml-auto md:w-[clamp(220px,32vh,300px)]">
               {about.skills.map((skill, i) => (
                 <span
                   key={skill}
@@ -90,8 +90,8 @@ export function About() {
           </div>
         </div>
 
-        <div className="mt-[46px] border-t border-[rgba(154,127,107,.18)] pt-[30px]">
-          <div className="font-serif mb-6 text-[18px] italic text-ink-muted">Highlights</div>
+        <div className="mt-[46px] border-t border-[rgba(154,127,107,.18)] pt-[30px] md:mt-8 md:pt-5">
+          <div className="font-serif mb-6 text-[18px] italic text-ink-muted md:mb-3">Highlights</div>
           {/* star + label stacks — centered columns on desktop, star-left rows
               on mobile; stars alternate pink / green by position */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-8 md:grid-cols-4 md:gap-x-6">
@@ -112,6 +112,7 @@ export function About() {
           </div>
         </div>
       </PagePanel>
+      </div>
     </main>
   );
 }

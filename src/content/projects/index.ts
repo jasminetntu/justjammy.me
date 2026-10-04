@@ -44,7 +44,9 @@ export const projects: ProjectMeta[] = [
   {
     slug: "before-i-go",
     title: "Before I Go",
-    hook: 'A pixel-style visual novel built in under a week — 1st place out of 40+ teams on the theme "Not Enough Time."',
+    hook:
+      'A pixel-style visual novel built in under a week — 1st place out of 40+ ' +
+      'teams on the theme "Not Enough Time."',
     role: "Developer · Designer",
     timeframe: "May 2025 · DA Game Jam",
     tags: ["Game Dev", "Visual Novel", "Pixel Art"],
@@ -57,7 +59,9 @@ export const projects: ProjectMeta[] = [
   {
     slug: "blowfish-budgeting",
     title: "Blowfish Budgeting",
-    hook: "A full-stack budgeting app that automates income, savings, and expense tracking — with a dynamic mascot to keep users motivated.",
+    hook:
+      "A full-stack budgeting app that automates income, savings, and expense " +
+      "tracking — with a dynamic mascot to keep users motivated.",
     role: "Developer · Designer · Artist",
     timeframe: "May 2025 · DA Hacks 3.5",
     tags: ["Node.js", "Figma", "Full-Stack"],
@@ -79,7 +83,9 @@ export const projects: ProjectMeta[] = [
   {
     slug: "murphys-lab",
     title: "Murphy's Lab",
-    hook: 'A pixel-style horror survival game in Unity — five enemy AI behaviors and a dynamic survival timer on the theme "Nothing Goes Wrong."',
+    hook:
+      'A pixel-style horror survival game in Unity — five enemy AI behaviors and ' +
+      'a dynamic survival timer on the theme "Nothing Goes Wrong."',
     role: "Developer · Designer · Artist",
     timeframe: "Feb 2025 · Brackey's Jam",
     tags: ["Unity", "C#", "Game Dev"],
@@ -90,7 +96,9 @@ export const projects: ProjectMeta[] = [
   {
     slug: "where-is-mr-quack",
     title: "Where is Mr. Quack?",
-    hook: 'A charming pixel-style RPG in GameMaker with a puzzle-based "bubble-push" mechanic for level progression.',
+    hook:
+      'A charming pixel-style RPG in GameMaker with a puzzle-based "bubble-push" ' +
+      'mechanic for level progression.',
     role: "Developer · Designer · Artist",
     timeframe: "Jan 2025 · Global Game Jam",
     tags: ["GameMaker", "Game Dev", "RPG"],

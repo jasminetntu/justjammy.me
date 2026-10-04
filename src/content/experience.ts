@@ -71,28 +71,32 @@ export const timeline: TimelineSection[] = [
         org: "NVIDIA",
         dates: "Jan 2026 – Present",
         blurb:
-          "Full-stack analytics platform for AI-first IT support — monthly analysis from ~6 hours to minutes, report prep ~95% faster.",
+          "Full-stack analytics platform for AI-first IT support — monthly " +
+          "analysis from ~6 hours to minutes, report prep ~95% faster.",
       },
       {
         role: "Agentic AI Intern",
         org: "Google Cloud",
         dates: "Jul – Aug 2025",
         blurb:
-          "Multi-agent system automating security scans across ~25 GCP services — manual analysis down over 90%.",
+          "Multi-agent system automating security scans across ~25 GCP " +
+          "services — manual analysis down over 90%.",
       },
       {
         role: "Customer Service Specialist",
         org: "Tastea",
         dates: "May 2024 – Aug 2025",
         blurb:
-          "Crafted drinks and trained new hires in a fast-paced café — helping support $7–9K in monthly revenue.",
+          "Crafted drinks and trained new hires in a fast-paced café — helping " +
+          "support $7–9K in monthly revenue.",
       },
       {
         role: "Mathematics Tutor",
         org: "Goodwill of the Greater East Bay",
         dates: "Aug 2021 – May 2023",
         blurb:
-          "Tutored high schoolers in AP Calculus & Statistics, lifting performance ~20% by making hard concepts click.",
+          "Tutored high schoolers in AP Calculus & Statistics, lifting " +
+          "performance ~20% by making hard concepts click.",
       },
     ],
   },
@@ -108,21 +112,26 @@ export const timeline: TimelineSection[] = [
         org: "Women in CS",
         dates: "Aug 2025 – Jun 2026",
         blurb:
-          "Directing workshops, career events, and corporate partnerships — expanding opportunities and building an empowering, inclusive space for women in tech.",
+          "Directing workshops, career events, and corporate partnerships — " +
+          "expanding opportunities and building an empowering, inclusive space " +
+          "for women in tech.",
       },
       {
         role: "Creative Director",
         org: "Game Dev Club",
         dates: "Jul 2025 – Jun 2026",
         blurb:
-          "Leading creative direction and branding — designing promotional materials and running workshops and game jams to foster an engaged community.",
+          "Leading creative direction and branding — designing promotional " +
+          "materials and running workshops and game jams to foster an engaged " +
+          "community.",
       },
       {
         role: "Product Director",
         org: "De Anza Expo",
         dates: "Sep 2025 – May 2026",
         blurb:
-          "Directed branding, visual identity, and attendee experience design for De Anza's student-led tech showcase.",
+          "Directed branding, visual identity, and attendee experience design " +
+          "for De Anza's student-led tech showcase.",
       },
     ],
   },

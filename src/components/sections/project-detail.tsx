@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import { PagePanel } from "@/components/layout/page-panel";
 import { BackLink } from "@/components/ui/back-link";
 import type { ProjectImage, ProjectMeta } from "@/content/projects";
+import { focalPosition } from "@/lib/focal";
 
 const POLAROID_ROTATIONS = [3, -2.5, 2, -3];
 
@@ -100,7 +101,14 @@ function Polaroid({ image, rotate }: { image: ProjectImage; rotate: number }) {
       style={{ transform: `rotate(${rotate}deg)` }}
     >
       <div className="relative h-[140px] w-full overflow-hidden">
-        <Image src={image.src} alt={image.alt} fill sizes="170px" className="object-cover" />
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes="170px"
+          className="object-cover"
+          style={{ objectPosition: focalPosition(image.focal) }}
+        />
       </div>
       {image.caption && (
         <div className="font-script absolute inset-x-0 bottom-1.5 text-center text-[16px] text-[#7a6a58]">

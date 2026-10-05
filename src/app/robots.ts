@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/opengraph-image", "/twitter-image"],
+      disallow: ["/opengraph-image", "/twitter-image", "/dev"],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
     host: siteUrl,

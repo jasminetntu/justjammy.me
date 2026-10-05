@@ -16,8 +16,8 @@ import {
   timeline,
   type TimelineSection,
 } from "@/content/experience";
-import { featuredProjects, type ProjectMeta } from "@/content/projects";
-import { comingSoon } from "@/content/site";
+import type { ProjectMeta } from "@/content/projects";
+import { focalPosition } from "@/lib/focal";
 import { ease } from "@/lib/theme";
 
 // fades a block in when it scrolls into view; `delay` staggers siblings that
@@ -67,9 +67,7 @@ function Reveal({
 
 // two-column layout — fixed identity sidebar (back · title · currently · skills ·
 // featured projects) + scrolling "growing stem" timeline on the right
-export function ExperienceVine() {
-  // coming-soon toggle → empty list falls through to the "blooming soon" state
-  const projects = comingSoon.projects ? [] : featuredProjects();
+export function ExperienceVine({ projects }: { projects: ProjectMeta[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   // mobile-only: skills + certs collapse so the work timeline surfaces first
   const [skillsOpen, setSkillsOpen] = useState(false);
@@ -293,7 +291,14 @@ function ProjectCard({ project, index }: { project: ProjectMeta; index: number }
     >
       {/* image or gradient fill */}
       {image ? (
-        <Image src={image.src} alt={image.alt} fill sizes="(max-width:640px) 100vw, 280px" className="object-cover" />
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes="(max-width:640px) 100vw, 280px"
+          className="object-cover"
+          style={{ objectPosition: focalPosition(image.focal) }}
+        />
       ) : (
         <div className="absolute inset-0" style={{ background: CARD_GRADIENTS[index % CARD_GRADIENTS.length] }} />
       )}

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ProjectDetail } from "@/components/sections/project-detail";
-import { projectBodies } from "@/content/projects/bodies";
-import { getProject, projects } from "@/content/projects";
+import { getProject, projectSlugs } from "@/content/projects";
 import { comingSoon } from "@/content/site";
 
 interface Params {
@@ -12,27 +11,25 @@ interface Params {
 
 // prerender a static page per project
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return projectSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (comingSoon.projects) return {};
   const { slug } = await params;
-  const project = getProject(slug);
-  if (!project) return {};
+  const resolved = await getProject(slug);
+  if (!resolved) return {};
   return {
-    title: project.title,
-    description: project.hook,
+    title: resolved.project.title,
+    description: resolved.project.hook,
   };
 }
 
 export default async function ProjectPage({ params }: Params) {
   if (comingSoon.projects) notFound(); // detail hidden while projects are coming soon
   const { slug } = await params;
-  const project = getProject(slug);
-  const loadBody = projectBodies[slug];
-  if (!project || !loadBody) notFound();
+  const resolved = await getProject(slug);
+  if (!resolved) notFound();
 
-  const { default: Body } = await loadBody();
-  return <ProjectDetail meta={project} Body={Body} />;
+  return <ProjectDetail meta={resolved.project} Body={resolved.Body} />;
 }

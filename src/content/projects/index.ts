@@ -1,117 +1,80 @@
-// project registry — typed metadata here, long-form case-study prose in the
-// sibling `<slug>.mdx`; add a project = one entry here + one MDX file
+// project registry — each project lives entirely in its own `<slug>.mdx`
+// file (metadata as `export const meta = {...}`, case-study prose as the
+// body below it); this file is just the slug → module wiring, since nothing
+// can discover "every .mdx in this folder" automatically (Turbopack has no
+// filesystem-glob-at-build-time primitive) and a Client Component can't use
+// `fs` to do it at runtime either.
+//
+// Server-only: `getAllProjects()` / `getProject()` dynamically `import()`
+// the compiled .mdx modules, so this file must only be imported from server
+// components — never from a Client Component, which would otherwise bundle
+// every case study's JS into the client. Server pages pass the resolved
+// `ProjectMeta[]` down as props.
 
-export type ProjectLayout = "notes" | "editorial" | "rail";
+import type { ComponentType } from "react";
 
-export interface ProjectStat {
-  value: string;
-  label: string;
+import type { ProjectInfo, ProjectMeta } from "./types";
+
+export type { ProjectImage, ProjectLayout, ProjectLink, ProjectMeta, ProjectStat } from "./types";
+
+// `meta` is `unknown` here (not `ProjectInfo`) because the compiled .mdx
+// module's declared type (see src/types/mdx.d.ts) is untyped — it's cast to
+// `ProjectMeta` only after `validateProject` checks it at runtime
+type ProjectModule = { meta: unknown; default: ComponentType };
+
+// import order here = display order on the vine's Projects section
+const modules: Record<string, () => Promise<ProjectModule>> = {
+  "before-i-go": () => import("./before-i-go.mdx"),
+  "blowfish-budgeting": () => import("./blowfish-budgeting.mdx"),
+  draftly: () => import("./draftly.mdx"),
+  "murphys-lab": () => import("./murphys-lab.mdx"),
+  "where-is-mr-quack": () => import("./where-is-mr-quack.mdx"),
+};
+
+const REQUIRED_FIELDS = ["title", "hook", "role", "timeframe", "tags", "layout"] as const;
+
+// `meta` is a plain JS export inside an .mdx file — TypeScript never checks
+// it. This is what catches a missing/misspelled field instead of letting it
+// fail silently (or crash deep inside a component) at render time.
+function validateProject(slug: string, meta: unknown): ProjectMeta {
+  const m = meta as Partial<ProjectInfo> | undefined;
+  if (!m || typeof m !== "object") {
+    throw new Error(`projects/${slug}.mdx: missing \`export const meta\``);
+  }
+  for (const field of REQUIRED_FIELDS) {
+    if (m[field] === undefined) {
+      throw new Error(`projects/${slug}.mdx: meta.${field} is required`);
+    }
+  }
+  if (!Array.isArray(m.tags)) {
+    throw new Error(`projects/${slug}.mdx: meta.tags must be an array`);
+  }
+  return { ...m, slug } as ProjectMeta;
 }
 
-export interface ProjectLink {
-  label: string;
-  href: string;
+// slugs only — cheap, doesn't load any module. Used by generateStaticParams
+// and the sitemap, neither of which need the full metadata.
+export function projectSlugs(): string[] {
+  return Object.keys(modules);
 }
 
-export interface ProjectImage {
-  // path under /public, e.g. "/images/projects/<slug>/hero.jpg"
-  src: string;
-  alt: string;
-  caption?: string; // handwritten-style caption in the field-notes layout
+// server-only: loads every project's metadata (validated) in display order
+export async function getAllProjects(): Promise<ProjectMeta[]> {
+  return Promise.all(
+    Object.entries(modules).map(async ([slug, load]) => validateProject(slug, (await load()).meta)),
+  );
 }
 
-export interface ProjectMeta {
-  slug: string;
-  title: string;
-  hook: string; // one-line summary, shown on the detail page
-  role: string;
-  timeframe: string;
-  tags: string[];
-  category?: string; // at-a-glance type, outline badge — e.g. "Game", "Full-Stack", "AI"
-  badge?: string; // standout callout (filled badge) — e.g. "1st place"
-  layout: ProjectLayout; // default detail layout
-  stats?: ProjectStat[];
-  links?: ProjectLink[];
-  images?: ProjectImage[];
-  featured?: boolean; // surface on the vine's Projects section
+// server-only: one project's metadata + its case-study component
+export async function getProject(slug: string): Promise<{ project: ProjectMeta; Body: ComponentType } | undefined> {
+  const load = modules[slug];
+  if (!load) return undefined;
+  const mod = await load();
+  return { project: validateProject(slug, mod.meta), Body: mod.default };
 }
 
-// ordered as they should appear; the vine reads `featured` ones
-// TODO(jasmine): add real `links` URLs (itch.io / Devpost / live) + `images`
-// (0-1 for most, a few more); tags marked "(confirm)" are guesses from the
-// description — correct the stack where unsure
-export const projects: ProjectMeta[] = [
-  {
-    slug: "before-i-go",
-    title: "Before I Go",
-    hook:
-      'A pixel-style visual novel built in under a week — 1st place out of 40+ ' +
-      'teams on the theme "Not Enough Time."',
-    role: "Developer · Designer",
-    timeframe: "May 2025 · DA Game Jam",
-    tags: ["Game Dev", "Visual Novel", "Pixel Art"],
-    category: "Game",
-    badge: "1st place",
-    layout: "notes",
-    stats: [{ value: "1st", label: "place · 40+ teams" }],
-    featured: true,
-  },
-  {
-    slug: "blowfish-budgeting",
-    title: "Blowfish Budgeting",
-    hook:
-      "A full-stack budgeting app that automates income, savings, and expense " +
-      "tracking — with a dynamic mascot to keep users motivated.",
-    role: "Developer · Designer · Artist",
-    timeframe: "May 2025 · DA Hacks 3.5",
-    tags: ["Node.js", "Figma", "Full-Stack"],
-    category: "Full-Stack",
-    layout: "notes",
-    featured: true,
-  },
-  {
-    slug: "draftly",
-    title: "Draftly",
-    hook: "A web app using the OpenAI API to analyze job descriptions and generate tailored resumes.",
-    role: "Developer · Designer · Artist",
-    timeframe: "Feb 2025 · SCU Hack for Humanity",
-    tags: ["Node.js", "OpenAI API", "Web"],
-    category: "AI",
-    layout: "notes",
-    featured: true,
-  },
-  {
-    slug: "murphys-lab",
-    title: "Murphy's Lab",
-    hook:
-      'A pixel-style horror survival game in Unity — five enemy AI behaviors and ' +
-      'a dynamic survival timer on the theme "Nothing Goes Wrong."',
-    role: "Developer · Designer · Artist",
-    timeframe: "Feb 2025 · Brackey's Jam",
-    tags: ["Unity", "C#", "Game Dev"],
-    category: "Game",
-    layout: "notes",
-    featured: true,
-  },
-  {
-    slug: "where-is-mr-quack",
-    title: "Where is Mr. Quack?",
-    hook:
-      'A charming pixel-style RPG in GameMaker with a puzzle-based "bubble-push" ' +
-      'mechanic for level progression.',
-    role: "Developer · Designer · Artist",
-    timeframe: "Jan 2025 · Global Game Jam",
-    tags: ["GameMaker", "Game Dev", "RPG"],
-    category: "Game",
-    layout: "notes",
-    featured: true,
-  },
-];
-
-export function getProject(slug: string): ProjectMeta | undefined {
-  return projects.find((p) => p.slug === slug);
-}
-
-export function featuredProjects(): ProjectMeta[] {
-  return projects.filter((p) => p.featured);
+// server-only: featured projects, in display order
+export async function getFeaturedProjects(): Promise<ProjectMeta[]> {
+  const all = await getAllProjects();
+  return all.filter((p) => p.featured);
 }

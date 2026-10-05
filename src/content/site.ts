@@ -24,7 +24,7 @@ export const site = {
 // placeholder content — /design shows a coming-soon page, and the experience
 // vine's Projects section shows "blooming soon" (detail routes stop building)
 export const comingSoon = {
-  design: true,
+  design: false,
   projects: true,
 } as const;
 

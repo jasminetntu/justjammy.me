@@ -3,13 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useFx } from "@/components/layout/fx-provider";
 import { BackLink } from "@/components/ui/back-link";
 import { FourPointStar } from "@/components/ui/four-point-star";
-import { pieces } from "@/content/design";
+import type { DesignPiece } from "@/content/design";
 import { clampCamAxis, computeWallBounds, layoutWall, type Placement } from "@/lib/design-wall";
+import { focalPosition } from "@/lib/focal";
 
 // wall tuning — "calm" motion only (the prototype's lively/museum modes were cut)
 const IDLE_AMP = 3.2; // px of gentle idle sway
@@ -59,11 +60,31 @@ function ModeButton({
   );
 }
 
-export function DesignGallery() {
+export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
   const router = useRouter();
   const { burst } = useFx();
 
+  // remembers whichever view (wall/grid) was last active, so navigating into
+  // a piece and back lands you where you left off instead of resetting to
+  // wall; starts "wall" on every render (server included) and only switches
+  // after mount, so hydration never has to reconcile a mismatched guess
   const [mode, setMode] = useState<"wall" | "grid">("wall");
+  // runs before paint (unlike useEffect) so a restored "grid" mode never
+  // flashes "wall" first
+  useLayoutEffect(() => {
+    try {
+      if (localStorage.getItem("design-mode") === "grid") setMode("grid");
+    } catch {
+      // localStorage unavailable (private mode, etc.) — stay on wall
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem("design-mode", mode);
+    } catch {
+      // ignore — persistence is best-effort
+    }
+  }, [mode]);
 
   // "drag to wander" hint — shown until the first real drag, then never again
   // (persisted across visits)
@@ -112,7 +133,7 @@ export function DesignGallery() {
       const pl = placed.get(p.slug)!;
       return { piece: p, ...pl, w: p.size.w, h: p.size.h };
     });
-  }, []);
+  }, [pieces]);
 
   // gallery extent, derived from the resolved layout — grows as you add pieces
   const bounds = useMemo(
@@ -223,11 +244,34 @@ export function DesignGallery() {
       if (wallRef.current) wallRef.current.style.cursor = "grab";
     };
 
+    // trackpad/wheel pan — no click-drag needed. Sign matches native scroll
+    // (scrollTop += deltaY): content moves opposite the wheel delta
+    const onWheel = (e: WheelEvent) => {
+      if (modeRef.current !== "wall") return;
+      e.preventDefault();
+      const dx = -e.deltaX;
+      const dy = -e.deltaY;
+      cam.current.x += dx;
+      cam.current.y += dy;
+      camV.current = { x: 0, y: 0 };
+      dragDist.current += Math.abs(dx) + Math.abs(dy);
+      if (dragDist.current > DRAG_SLOP && !hintDismissed.current) {
+        hintDismissed.current = true;
+        setShowHint(false);
+        try {
+          localStorage.setItem("design-wall-dragged", "1");
+        } catch {
+          // ignore — persistence is best-effort
+        }
+      }
+    };
+
     const wall = wallRef.current;
     wall?.addEventListener("pointerdown", onDown);
     addEventListener("pointermove", onMove, { passive: true });
     addEventListener("pointerup", onUp);
     addEventListener("resize", measure);
+    wall?.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
       cancelAnimationFrame(raf);
@@ -235,6 +279,7 @@ export function DesignGallery() {
       removeEventListener("pointermove", onMove);
       removeEventListener("pointerup", onUp);
       removeEventListener("resize", measure);
+      wall?.removeEventListener("wheel", onWheel);
     };
   }, [bounds, layout]);
 
@@ -253,11 +298,12 @@ export function DesignGallery() {
       {/* wall — full-bleed draggable polaroid scatter */}
       <div
         ref={wallRef}
-        className="absolute inset-0 cursor-grab touch-none"
+        className="absolute inset-0 cursor-grab touch-none select-none"
         style={{ display: mode === "wall" ? "block" : "none" }}
       >
         {layout.map((l) => {
           const p = l.piece;
+          const thumb = p.images?.[0];
           return (
             <Link
               key={p.slug}
@@ -279,22 +325,23 @@ export function DesignGallery() {
                 const rt = runtime.current.get(p.slug);
                 if (rt) rt.hover = false;
               }}
-              className="group absolute left-1/2 top-1/2 z-[1] block cursor-pointer"
+              className="group absolute left-1/2 top-1/2 z-[1] block cursor-pointer hover:z-20 focus-visible:z-20"
               style={{ willChange: "transform" }}
             >
               {/* the framed piece */}
-              <div className="rounded-[2px] bg-white p-[11px_11px_30px] shadow-[0_12px_30px_rgba(154,90,120,.16),0_2px_6px_rgba(154,90,120,.12)] transition-shadow duration-500 group-hover:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)] max-md:group-active:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)]">
+              <div className="relative rounded-[2px] bg-white p-[11px_11px_44px] shadow-[0_12px_30px_rgba(154,90,120,.16),0_2px_6px_rgba(154,90,120,.12)] transition-shadow duration-500 group-hover:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)] max-md:group-active:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)]">
                 <div
                   className="relative overflow-hidden rounded-[1px]"
-                  style={{ width: l.w, height: l.h, background: p.image ? undefined : p.gradient }}
+                  style={{ width: l.w, height: l.h, background: thumb ? undefined : p.gradient }}
                 >
-                  {p.image ? (
+                  {thumb ? (
                     <Image
-                      src={p.image.src}
-                      alt={p.image.alt}
+                      src={thumb.src}
+                      alt={thumb.alt}
                       fill
                       sizes="384px"
                       className="object-cover"
+                      style={{ objectPosition: focalPosition(thumb.focal) }}
                       draggable={false}
                     />
                   ) : (
@@ -303,12 +350,15 @@ export function DesignGallery() {
                     </span>
                   )}
                 </div>
-              </div>
-              {/* caption blooms in on hover */}
-              <div className="pointer-events-none absolute inset-x-0 top-full mt-[11px] translate-y-[-4px] text-center opacity-0 transition-[opacity,transform] duration-[450ms] group-hover:translate-y-0 group-hover:opacity-100 max-md:group-active:translate-y-0 max-md:group-active:opacity-100">
-                <div className="font-serif text-[18px] text-[#6b4358]">{p.title}</div>
-                <div className="font-serif text-[13px] italic text-[#b07a97]">
-                  {p.medium} · {p.year}
+                {/* caption in the polaroid's own white margin, like a note
+                    under a real photo — revealed on hover */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 px-4 py-[8px] text-left opacity-0 transition-opacity duration-[350ms] group-hover:opacity-100 max-md:group-active:opacity-100">
+                  <div className="font-serif truncate text-[15px] font-medium leading-none text-[#6b4358]">
+                    {p.title}
+                  </div>
+                  <div className="font-serif truncate text-[11px] italic leading-none text-[#a37a90]">
+                    {p.medium} · {p.year}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -322,7 +372,9 @@ export function DesignGallery() {
           <div className="mx-auto max-w-[1180px] px-[clamp(24px,5vw,60px)] pb-[100px] pt-[132px] md:pt-[172px]">
             {/* CSS multi-column masonry — 2 cols on phones, 3 on wider screens */}
             <div className="columns-2 gap-6 md:columns-3">
-              {pieces.map((p) => (
+              {pieces.map((p) => {
+                const thumb = p.images?.[0];
+                return (
                 <Link
                   key={p.slug}
                   href={`/design/${p.slug}`}
@@ -333,15 +385,16 @@ export function DesignGallery() {
                 >
                   <div
                     className="relative w-full"
-                    style={{ height: p.gridHeight, background: p.image ? undefined : p.gradient }}
+                    style={{ aspectRatio: `${p.size.w} / ${p.size.h}`, background: thumb ? undefined : p.gradient }}
                   >
-                    {p.image && (
+                    {thumb && (
                       <Image
-                        src={p.image.src}
-                        alt={p.image.alt}
+                        src={thumb.src}
+                        alt={thumb.alt}
                         fill
                         sizes="(max-width:768px) 50vw, 380px"
                         className="object-cover"
+                        style={{ objectPosition: focalPosition(thumb.focal) }}
                       />
                     )}
                   </div>
@@ -352,7 +405,8 @@ export function DesignGallery() {
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -361,7 +415,7 @@ export function DesignGallery() {
       {/* back + eyebrow — top left, below the header; mobile lines up with the
           page edge (matching about's left padding), desktop shifts right to
           clear the J monogram */}
-      <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-24 z-[6] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
+      <div className="pointer-events-none absolute left-[clamp(24px,5vw,60px)] top-24 z-[21] flex flex-col items-start gap-2 md:left-[calc(clamp(22px,4vw,52px)+50px)]">
         <BackLink href="/" label="back" className="pointer-events-auto text-ink-faint" />
         <h1 className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
@@ -369,7 +423,7 @@ export function DesignGallery() {
       </div>
 
       {/* explore ⁄ compact toggle — bottom center */}
-      <div className="absolute bottom-7 left-1/2 z-[6] inline-flex -translate-x-1/2 items-center gap-3.5 rounded-[20px] border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] px-[22px] py-2 shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px]">
+      <div className="absolute bottom-7 left-1/2 z-[21] inline-flex -translate-x-1/2 items-center gap-3.5 rounded-[20px] border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] px-[22px] py-2 shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px]">
         <ModeButton label="explore" active={mode === "wall"} onClick={() => setMode("wall")} />
         <FourPointStar size={10} color="#e2a7c4" />
         <ModeButton label="compact" active={mode === "grid"} onClick={() => setMode("grid")} />
@@ -379,7 +433,7 @@ export function DesignGallery() {
           it never blinks away */}
       {mode === "wall" && (
         <div
-          className="font-serif pointer-events-none absolute bottom-[74px] left-1/2 z-[5] -translate-x-1/2 whitespace-nowrap text-[14.5px] italic text-[#c189a6] transition-opacity duration-700 ease-out"
+          className="font-serif pointer-events-none absolute bottom-[74px] left-1/2 z-[21] -translate-x-1/2 whitespace-nowrap text-[14.5px] italic text-[#c189a6] transition-opacity duration-700 ease-out"
           style={{ opacity: showHint ? 1 : 0 }}
         >
           drag to wander
@@ -392,8 +446,12 @@ export function DesignGallery() {
         target="_blank"
         rel="noopener noreferrer"
         title="@jammydoodlez"
-        className="absolute bottom-7 right-[clamp(20px,4vw,44px)] z-[6] inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] text-pink-deep shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-transform duration-300 hover:scale-110 hover:-rotate-[4deg] max-md:active:scale-110 max-md:active:-rotate-[4deg]"
+        className="group absolute bottom-7 right-[clamp(20px,4vw,44px)] z-[21] inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] text-pink-deep shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-transform duration-300 hover:scale-110 hover:-rotate-[4deg] max-md:active:scale-110 max-md:active:-rotate-[4deg]"
       >
+        {/* handle — blooms in to the left so it never clips off the screen edge */}
+        <span className="font-serif pointer-events-none absolute right-full top-1/2 -translate-x-[6px] -translate-y-1/2 whitespace-nowrap rounded-full border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.9)] px-3 py-1.5 text-[13px] italic text-pink-deep opacity-0 shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-[opacity,transform] duration-[350ms] group-hover:-translate-x-[11px] group-hover:opacity-100 max-md:group-active:-translate-x-[11px] max-md:group-active:opacity-100">
+          @jammydoodlez
+        </span>
         <svg
           width="18"
           height="18"

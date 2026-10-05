@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PieceDetail } from "@/components/sections/piece-detail";
-import { getPiece, pieces } from "@/content/design";
+import { getPiece, pieceSlugs } from "@/content/design";
 import { comingSoon } from "@/content/site";
 
 interface Params {
@@ -11,25 +11,25 @@ interface Params {
 
 // prerender a static page per design piece
 export function generateStaticParams() {
-  return pieces.map((p) => ({ slug: p.slug }));
+  return pieceSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (comingSoon.design) return {};
   const { slug } = await params;
-  const piece = getPiece(slug);
-  if (!piece) return {};
+  const resolved = await getPiece(slug);
+  if (!resolved) return {};
   return {
-    title: piece.title,
-    description: piece.blurb,
+    title: resolved.piece.title,
+    description: resolved.piece.blurb,
   };
 }
 
 export default async function PiecePage({ params }: Params) {
   if (comingSoon.design) notFound(); // detail hidden while the section is coming soon
   const { slug } = await params;
-  const piece = getPiece(slug);
-  if (!piece) notFound();
+  const resolved = await getPiece(slug);
+  if (!resolved) notFound();
 
-  return <PieceDetail piece={piece} />;
+  return <PieceDetail piece={resolved.piece} Body={resolved.Body} />;
 }

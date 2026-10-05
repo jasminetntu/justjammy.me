@@ -1,161 +1,88 @@
-// design-piece registry — one typed entry per piece; the polaroid wall, masonry
-// grid, and wall boundary all read this array, so adding a piece = one entry here
-// (no component edits, no hand-placed coordinates).
+// design-piece registry — each piece lives entirely in its own `<slug>.mdx`
+// file (metadata as `export const meta = {...}`, write-up as the body below
+// it); this file is just the slug → module wiring, since nothing can
+// discover "every .mdx in this folder" automatically (Turbopack has no
+// filesystem-glob-at-build-time primitive) and a Client Component can't use
+// `fs` to do it at runtime either.
 //
-// pieces are placeholders for now (gradient fills, generic titles); swap in real
-// @jammydoodlez artwork later via an entry's `image` + real copy
+// Server-only: `getAllPieces()` / `getPiece()` dynamically `import()` the
+// compiled .mdx modules, so this file must only be imported from server
+// components (the design pages) — never from DesignGallery or other Client
+// Components, which would otherwise bundle every write-up's JS into the
+// client. Server pages pass the resolved `DesignPiece[]` down as props.
 
-import type { PiecePlacement } from "@/lib/design-wall";
+import type { ComponentType } from "react";
 
-export type DesignCategory = "posters" | "portraits" | "web" | "motion";
+import type { DesignCategory, DesignMeta, DesignPiece } from "./types";
 
-export interface DesignImage {
-  // path under /public, e.g. "/images/design/<slug>/hero.jpg"
-  src: string;
-  alt: string;
-  caption?: string;
+export type { DesignCategory, DesignImage, DesignLink, DesignPiece } from "./types";
+
+// `meta` is `unknown` here (not `DesignMeta`) because the compiled .mdx
+// module's declared type (see src/types/mdx.d.ts) is untyped — it's cast to
+// `DesignMeta` only after `validatePiece` checks it at runtime
+type DesignModule = { meta: unknown; default: ComponentType };
+
+// import order here = display order — it drives the wall/grid layout order
+// and the category-chip order (see pieceCategories below)
+const modules: Record<string, () => Promise<DesignModule>> = {
+  dax: () => import("./dax.mdx"),
+  dagdc: () => import("./dagdc.mdx"),
+  "dagdc-gamejam": () => import("./dagdc-gamejam.mdx"),
+  dawics: () => import("./dawics.mdx"),
+  "dawics-career-panel": () => import("./dawics-career-panel.mdx"),
+  "dawics-hackathon": () => import("./dawics-hackathon.mdx"),
+  "vector-illustration": () => import("./vector-illustration.mdx"),
+  "illustration-figures": () => import("./illustration-figures.mdx"),
+  "illustration-other": () => import("./illustration-other.mdx"),
+  "personal-brand": () => import("./personal-brand.mdx"),
+};
+
+const CATEGORIES: DesignCategory[] = ["de anza", "illustration", "branding"];
+const REQUIRED_FIELDS = ["title", "medium", "year", "category", "blurb", "size"] as const;
+
+// `meta` is a plain JS export inside an .mdx file — TypeScript never checks
+// it. This is what catches a typo'd category or a missing field instead of
+// letting it fail silently (or crash deep inside a component) at render time.
+function validatePiece(slug: string, meta: unknown): DesignPiece {
+  const m = meta as Partial<DesignMeta> | undefined;
+  if (!m || typeof m !== "object") {
+    throw new Error(`design/${slug}.mdx: missing \`export const meta\``);
+  }
+  for (const field of REQUIRED_FIELDS) {
+    if (m[field] === undefined) {
+      throw new Error(`design/${slug}.mdx: meta.${field} is required`);
+    }
+  }
+  if (!CATEGORIES.includes(m.category as DesignCategory)) {
+    throw new Error(
+      `design/${slug}.mdx: meta.category "${String(m.category)}" must be one of ${CATEGORIES.join(", ")}`,
+    );
+  }
+  return { ...m, slug } as DesignPiece;
 }
 
-export interface DesignLink {
-  label: string;
-  href: string;
+// slugs only — cheap, doesn't load any module. Used by generateStaticParams
+// and the sitemap, neither of which need the full metadata.
+export function pieceSlugs(): string[] {
+  return Object.keys(modules);
 }
 
-export interface DesignPiece {
-  slug: string;
-  title: string;
-  medium: string; // display label, e.g. "poster", "web · experience"
-  year: string;
-  category: DesignCategory; // filter key
-  blurb: string; // one-line intro shown on the detail page
-  description?: string; // longer prose for the detail page (typed, no MDX)
-  gradient: string; // fallback fill until real art lands
-  image?: DesignImage; // real artwork, when available
-  links?: DesignLink[];
-
-  // polaroid size on the wall (px) — a property of the art, not its placement
-  size: { w: number; h: number };
-  gridHeight: number; // tile height in the masonry grid (px)
-
-  // wall placement is AUTO by default — layoutWall() scatters pieces with
-  // guaranteed spacing, so a new piece needs no coordinates; set `place` to
-  // art-direct one, any omitted field still auto-resolves
-  place?: PiecePlacement;
+// server-only: loads every piece's metadata (validated) in display order
+export async function getAllPieces(): Promise<DesignPiece[]> {
+  return Promise.all(Object.entries(modules).map(async ([slug, load]) => validatePiece(slug, (await load()).meta)));
 }
 
-// gradient palette shared across the placeholder pieces
-const G = {
-  pink: "linear-gradient(150deg,#fbe1ee,#e7a6c6)",
-  pink2: "linear-gradient(150deg,#f6d6e6,#dd8fb6)",
-  portrait: "linear-gradient(155deg,#fdeef4,#f0c4dc)",
-  portrait2: "linear-gradient(155deg,#f7dfeb,#e3a9c6)",
-  web: "linear-gradient(150deg,#fbe1ee,#dcebd0)",
-  motion: "linear-gradient(150deg,#f2d6ec,#cdb4e6)",
-} as const;
-
-// placeholders — neutral "title / type / year" text until real pieces land
-// TODO(jasmine): fill real title/medium/year/blurb per piece + `image`
-// (art under /public/images/design/<slug>/) and any `links`; positions auto,
-// so a new piece needs only `size` + `gridHeight` (no coordinates).
-const BLURB = "A short description of this piece.";
-export const pieces: DesignPiece[] = [
-  {
-    slug: "piece-1",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "posters",
-    blurb: BLURB,
-    gradient: G.pink,
-    size: { w: 240, h: 316 },
-    gridHeight: 210,
-  },
-  {
-    slug: "piece-2",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "posters",
-    blurb: BLURB,
-    gradient: G.pink2,
-    size: { w: 240, h: 316 },
-    gridHeight: 175,
-  },
-  {
-    slug: "piece-3",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "posters",
-    blurb: BLURB,
-    gradient: G.pink,
-    size: { w: 240, h: 316 },
-    gridHeight: 195,
-  },
-  {
-    slug: "piece-4",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "portraits",
-    blurb: BLURB,
-    gradient: G.portrait,
-    size: { w: 258, h: 318 },
-    gridHeight: 225,
-  },
-  {
-    slug: "piece-5",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "portraits",
-    blurb: BLURB,
-    gradient: G.portrait2,
-    size: { w: 258, h: 318 },
-    gridHeight: 185,
-  },
-  {
-    slug: "piece-6",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "portraits",
-    blurb: BLURB,
-    gradient: G.portrait,
-    size: { w: 258, h: 318 },
-    gridHeight: 205,
-  },
-  {
-    slug: "piece-7",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "web",
-    blurb: BLURB,
-    gradient: G.web,
-    size: { w: 384, h: 240 },
-    gridHeight: 165,
-  },
-  {
-    slug: "piece-8",
-    title: "Title",
-    medium: "type",
-    year: "year",
-    category: "motion",
-    blurb: BLURB,
-    gradient: G.motion,
-    size: { w: 288, h: 288 },
-    gridHeight: 185,
-  },
-];
-
-export function getPiece(slug: string): DesignPiece | undefined {
-  return pieces.find((p) => p.slug === slug);
+// server-only: one piece's metadata + its write-up component
+export async function getPiece(slug: string): Promise<{ piece: DesignPiece; Body: ComponentType } | undefined> {
+  const load = modules[slug];
+  if (!load) return undefined;
+  const mod = await load();
+  return { piece: validatePiece(slug, mod.meta), Body: mod.default };
 }
 
-// filter options derived from existing pieces (order preserved),
-// so the chip bar stays in sync with the data
-export function pieceCategories(): Array<"all" | DesignCategory> {
+// filter options derived from a resolved pieces list (order preserved), so
+// the chip bar stays in sync with the data
+export function pieceCategories(pieces: DesignPiece[]): Array<"all" | DesignCategory> {
   const seen: DesignCategory[] = [];
   for (const p of pieces) {
     if (!seen.includes(p.category)) seen.push(p.category);

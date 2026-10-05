@@ -33,10 +33,10 @@ export const WASH_SETS: Record<View, Wash> = {
     [160, 190, 128, 0.1],
   ],
   design: [
-    [233, 128, 176, 0.13],
-    [222, 150, 190, 0.09],
-    [233, 150, 190, 0.08],
-    [233, 128, 176, 0.08],
+    [233, 128, 176, 0.26],
+    [222, 150, 190, 0.16],
+    [160, 190, 128, 0.2],
+    [233, 128, 176, 0.12],
   ],
   contact: [
     // faint: page gradient carries the color, ribbon drifts over it

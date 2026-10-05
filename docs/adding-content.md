@@ -12,7 +12,7 @@ Where content lives:
 | About page copy + highlights | `src/content/about.ts` |
 | Experience timeline, skills, certs | `src/content/experience.ts` |
 | Projects (metadata + case studies) | `src/content/projects/` |
-| Design pieces (artwork) | `src/content/design/index.ts` |
+| Design pieces (metadata + optional write-up) | `src/content/design/` |
 | Images | `public/images/…` |
 | Show/hide the coming-soon states | `src/content/site.ts` (`comingSoon`) |
 
@@ -20,15 +20,14 @@ Where content lives:
 
 ## 1. Add a project
 
-A project = **one entry of info** + **one write-up file** + **one line to link them**.
+A project is **one file**: `src/content/projects/my-project.mdx` (the filename **becomes the slug**, lowercase with dashes — it's the only link between the file and the URL `/projects/my-project`).
 
-### Step 1 — add the info
+### Step 1 — create the file and its info
 
-Open `src/content/projects/index.ts`. Copy an existing entry in the `projects` array and edit it. Only `slug, title, hook, role, timeframe, tags, layout` are required; the rest are optional.
+At the top of the file, export a `meta` object. Only `title, hook, role, timeframe, tags, layout` are required; the rest are optional.
 
-```ts
-{
-  slug: "my-project",            // becomes the URL: /projects/my-project (lowercase, dashes)
+```mdx
+export const meta = {
   title: "My Project",
   hook: "One sentence about what it is.",
   role: "Developer · Designer",
@@ -40,12 +39,12 @@ Open `src/content/projects/index.ts`. Copy an existing entry in the `projects` a
   stats: [{ value: "1st", label: "place · 40+ teams" }],   // optional
   links: [{ label: "Live", href: "https://…" }],           // optional
   featured: true,                // show it in the Experience page's Projects section
-},
+};
 ```
 
 ### Step 2 — write the story
 
-Create a new file `src/content/projects/my-project.mdx` (the name **must match the slug**). Write in Markdown. Headings become italic section titles:
+Below the `meta` export, write the case study in Markdown. Headings become italic section titles:
 
 ```mdx
 ## The spark
@@ -55,18 +54,20 @@ What it is and why I made it.
 The interesting parts. **Bold**, images, and lists all work.
 ```
 
-### Step 3 — link them
+### Step 3 — register the file
 
-Open `src/content/projects/bodies.ts` and add one line to the list:
+Open `src/content/projects/index.ts` and add one line to the `modules` map:
 
 ```ts
 "my-project": () => import("./my-project.mdx"),
 ```
 
+(This is the one place that still needs a manual edit — nothing can discover "every file in this folder" automatically, so each slug is wired up explicitly.)
+
 ### (Optional) add images
 
 1. Put image files in `public/images/projects/my-project/` (create the folder).
-2. Add an `images` field to the entry from Step 1:
+2. Add an `images` field to `meta`:
 
 ```ts
 images: [
@@ -74,44 +75,74 @@ images: [
 ],
 ```
 
-✅ **Checklist:** entry in `index.ts` → `my-project.mdx` file → line in `bodies.ts` → (optional) images. The project now has a page at `/projects/my-project`.
+✅ **Checklist:** `my-project.mdx` with a `meta` export + story → one line in `index.ts`'s `modules` map → (optional) images. The project now has a page at `/projects/my-project`.
+
+> **Heads up:** `meta` is plain JS, not type-checked by the editor. A typo'd field name or a missing required field won't show a red squiggle — but it *will* throw a clear error the next time you run `npm run dev` or `npm run build`, naming the exact file and field.
 
 ---
 
 ## 2. Add a design piece (artwork)
 
-Simpler — just **one entry**. Open `src/content/design/index.ts` and copy an entry
-in the `pieces` array.
+Same shape as a project: **one file**, `src/content/design/my-piece.mdx` (the
+filename **becomes the slug** — the URL is `/design/my-piece`).
 
-### With real artwork
+### Step 1 — create the file and its info
 
-1. Put the image in `public/images/design/my-piece/` (create the folder).
-2. Add the entry:
+At the top of the file, export a `meta` object.
 
-```ts
-{
-  slug: "my-piece",              // becomes /design/my-piece
+```mdx
+export const meta = {
   title: "Poster for X",
   medium: "poster",              // small label, e.g. "poster", "portrait"
   year: "2025",
-  category: "posters",           // one of: posters | portraits | web | motion
+  category: "de anza",           // one of: "de anza" | "illustration" | "branding"
   blurb: "One line about the piece.",
-  gradient: G.pink,              // ignored once `image` is set (keep any value)
-  image: { src: "/images/design/my-piece/art.jpg", alt: "short description" },
-  size: { w: 260, h: 320 },      // how big it appears on the draggable wall (px)
-  gridHeight: 220,               // its height in the compact grid view (px)
-},
+  images: [                      // first image is the wall/grid thumbnail;
+    { src: "/images/design/my-piece/art.jpg", alt: "short description", caption: "optional" },
+    { src: "/images/design/my-piece/more.jpg", alt: "short description" },
+  ],                             // the rest browse via a carousel on the detail page
+  size: { w: 260, h: 320 },      // the art's real shape (any scale — only the ratio matters)
+};
 ```
 
-> **Tip — no cropping:** set `size` and `gridHeight` to roughly match your image's shape. Tall image → taller numbers; wide image → set `w` bigger than `h` and a smaller `gridHeight`.
+> **Tip — no cropping:** set `size` to your thumbnail image's actual width:height ratio (e.g. open it and check its pixel dimensions). It sizes both the draggable-wall polaroid *and* the compact-grid tile, so getting the ratio right means neither view crops the image oddly. Want a specific shape (square / horizontal / vertical) for the detail-page carousel regardless of the source images? Add `galleryShape: "square"` (or `"horizontal"` / `"vertical"`).
+
+### Step 2 — write the story (optional)
+
+Below the `meta` export, write in Markdown, same as a project's case study:
+
+```mdx
+## The brief
+What it is and the thinking behind it.
+
+## The process
+The interesting parts. **Bold**, images, and lists all work.
+```
+
+No write-up yet? Leave it out — the file can be just the `meta` export; the
+piece's detail page won't show a write-up section until you add one.
+
+### Step 3 — register the file
+
+Open `src/content/design/index.ts` and add one line to the `modules` map:
+
+```ts
+"my-piece": () => import("./my-piece.mdx"),
+```
+
+(This is the one place that still needs a manual edit — nothing can discover "every file in this folder" automatically, so each slug is wired up explicitly. The order of lines here is the display order on the wall/grid.)
 
 ### Without artwork yet (placeholder)
 
-Leave off `image` and pick a `gradient` from the `G` palette at the top of the file (`G.pink`, `G.portrait`, `G.web`, `G.motion`, …). It shows a soft color tile until you add art.
+Leave off `images` and set `gradient` to any CSS gradient string, e.g.
+`"linear-gradient(150deg,#fbe1ee,#e7a6c6)"`. It shows that color tile until you add art.
 
 You don't place pieces on the wall — positions are automatic and never overlap.
 
-✅ **Checklist:** image in `public/images/design/<slug>/` → one entry in `index.ts` with `image`. Done.
+✅ **Checklist:** image(s) in `public/images/design/<slug>/` → `my-piece.mdx` with
+a `meta` export (+ optional write-up) → one line in `index.ts`'s `modules` map.
+
+> **Heads up:** `meta` is plain JS, not type-checked by the editor. A typo'd field name, a missing required field, or a `category` that isn't one of the three listed won't show a red squiggle — but it *will* throw a clear error the next time you run `npm run dev` or `npm run build`, naming the exact file and field.
 
 ---
 

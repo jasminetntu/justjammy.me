@@ -159,9 +159,7 @@ export class FxEngine {
       x.fillRect(0, 0, W, H);
     });
 
-    // ribbon fades out where it would fight content (full-bleed design wall)
-    const ribTgt = this.view === "design" ? 0 : 1;
-    this.ribbonAlpha += (ribTgt - this.ribbonAlpha) * 0.04;
+    this.ribbonAlpha += (1 - this.ribbonAlpha) * 0.04;
     // reduced motion: draw the ribbon frozen (fixed time, no pointer sway)
     if (this.ribbonAlpha > 0.01)
       drawRibbon(x, this.reduced ? 8 : t, W, H, this.ribbonAlpha, this.reduced ? 0 : this.pointer.ny);

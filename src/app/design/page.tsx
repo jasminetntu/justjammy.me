@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { ComingSoon } from "@/components/sections/coming-soon";
 import { DesignGallery } from "@/components/sections/design-gallery";
+import { getAllPieces } from "@/content/design";
 import { comingSoon } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
   description: "A wandering gallery of posters, portraits, and motion work by Jasmine Tu.",
 };
 
-export default function DesignPage() {
+export default async function DesignPage() {
   if (comingSoon.design) return <ComingSoon eyebrow="design" />;
-  return <DesignGallery />;
+  const pieces = await getAllPieces();
+  return <DesignGallery pieces={pieces} />;
 }

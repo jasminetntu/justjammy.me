@@ -59,7 +59,10 @@ export default function RootLayout({
       lang="en"
       className={`${parisienne.variable} ${cormorant.variable} ${hanken.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-cream font-sans text-ink">
+      {/* suppressHydrationWarning: browser extensions (Grammarly, etc.) inject
+          data-gr-* attributes onto <body> before React hydrates; harmless,
+          not something our markup can control */}
+      <body className="min-h-full bg-cream font-sans text-ink" suppressHydrationWarning>
         <FxProvider>
           <BackgroundCanvas />
           <SiteHeader />

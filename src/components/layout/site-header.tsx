@@ -114,7 +114,7 @@ export function SiteHeader() {
         className="flex h-[46px] w-[46px] items-center justify-center transition-transform duration-500 hover:-rotate-[4deg] hover:scale-[1.08] max-md:active:-rotate-[4deg] max-md:active:scale-[1.08]"
         style={{ transitionTimingFunction: ease.soft }}
       >
-        <Image src="/images/logo.svg" alt="home" width={40} height={40} priority />
+        <Image src="/images/logo.svg" alt="home" width={40} height={40} priority className="h-10 w-10" />
       </Link>
 
       {/* keyed by pathname so the bloom closes itself on navigation */}

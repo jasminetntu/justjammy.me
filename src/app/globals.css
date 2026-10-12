@@ -40,6 +40,20 @@ body {
   border-radius: 3px;
 }
 
+/* filter checkbox pops on check/uncheck — re-triggered by remounting the
+   checkbox (see design-gallery.tsx's FilterGroup, `key={checked}`) */
+@keyframes checkbox-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  55% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* kaomoji click sparkles fly out to the right and dissolve */
 @keyframes kao-spark {
   0% {

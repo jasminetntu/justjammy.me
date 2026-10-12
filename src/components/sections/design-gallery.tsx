@@ -32,6 +32,187 @@ function restingTransform(pl: Placement): string {
   return `translate(-50%,-50%) translate(${pl.x}px,${pl.y}px) rotate(${pl.rot}deg)`;
 }
 
+// unique values, first-seen order — so filter option order stays stable
+// (and matches the pieces' own display order) as pieces are added/removed
+function dedupe(values: string[]): string[] {
+  const seen: string[] = [];
+  for (const v of values) if (!seen.includes(v)) seen.push(v);
+  return seen;
+}
+
+function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
+  const next = new Set(set);
+  if (next.has(value)) next.delete(value);
+  else next.add(value);
+  return next;
+}
+
+// one "Filters" pill that opens a panel with both the category and
+// associated-to groups labeled inside, stacked; closes on an outside
+// click, same pattern as the header's radial menu
+function FilterMenu({
+  categoryOptions,
+  selectedCategories,
+  onToggleCategory,
+  associationOptions,
+  selectedAssociations,
+  onToggleAssociation,
+}: {
+  categoryOptions: string[];
+  selectedCategories: Set<string>;
+  onToggleCategory: (value: string) => void;
+  associationOptions: string[];
+  selectedAssociations: Set<string>;
+  onToggleAssociation: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const totalSelected = selectedCategories.size + selectedAssociations.size;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="pointer-events-auto relative">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((o) => !o);
+        }}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 rounded-[20px] border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.82)] px-4 py-2 text-[13px] text-pink-deep shadow-[0_4px_18px_rgba(154,90,120,.07)] backdrop-blur-[8px] transition-[transform,background-color] duration-300 hover:scale-110 hover:bg-[rgba(221,143,182,.16)] active:scale-95 max-md:active:scale-110 max-md:active:bg-[rgba(221,143,182,.16)]"
+      >
+        {/* fixed-size slot so the pill's width never shifts as the icon
+            swaps for the selection count */}
+        <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center">
+          {totalSelected > 0 ? (
+            <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[rgba(221,143,182,.25)] text-[11px] font-medium text-pink-deep">
+              {totalSelected}
+            </span>
+          ) : (
+            <svg
+              width={14}
+              height={14}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="21" y1="4" x2="14" y2="4" />
+              <line x1="10" y1="4" x2="3" y2="4" />
+              <line x1="21" y1="12" x2="12" y2="12" />
+              <line x1="8" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="20" x2="16" y2="20" />
+              <line x1="12" y1="20" x2="3" y2="20" />
+              <line x1="14" y1="2" x2="14" y2="6" />
+              <line x1="8" y1="10" x2="8" y2="14" />
+              <line x1="16" y1="18" x2="16" y2="22" />
+            </svg>
+          )}
+        </span>
+        <span className="font-serif italic leading-none">Filters</span>
+      </button>
+
+      {/* always mounted (not conditionally rendered) so it can transition
+          in/out — a grow-from-top reveal instead of popping in instantly.
+          Staying mounted while closed also means the checkbox rows below
+          never remount when the panel opens, which previously made every
+          checkbox play its check/uncheck pop animation on open by mistake. */}
+      <div
+        className="absolute right-0 top-[calc(100%+8px)] z-10 min-w-[200px] origin-top rounded-[16px] border border-[rgba(201,127,166,.14)] bg-[rgba(255,252,254,.96)] p-1.5 shadow-[0_12px_32px_rgba(154,90,120,.16)] backdrop-blur-[8px] transition-[transform,opacity] duration-200 ease-out"
+        style={{
+          transform: open ? "scaleY(1)" : "scaleY(0.05)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+        }}
+      >
+        <FilterGroup
+          label="Category"
+          options={categoryOptions}
+          selected={selectedCategories}
+          onToggle={onToggleCategory}
+        />
+        <div className="my-1.5 border-t border-[rgba(154,127,107,.14)]" />
+        <FilterGroup
+          label="Affiliation"
+          options={associationOptions}
+          selected={selectedAssociations}
+          onToggle={onToggleAssociation}
+        />
+      </div>
+    </div>
+  );
+}
+
+// one labeled section (heading + checkbox rows) inside the Filters panel
+function FilterGroup({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: string[];
+  selected: Set<string>;
+  onToggle: (value: string) => void;
+}) {
+  return (
+    <div>
+      <div className="px-2.5 pb-1 pt-1 text-[11px] font-medium uppercase tracking-[.08em] text-ink-faint">
+        {label}
+      </div>
+      {options.map((option) => {
+        const checked = selected.has(option);
+        return (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onToggle(option)}
+            className="flex w-full items-center gap-2.5 whitespace-nowrap rounded-[10px] px-2.5 py-1.5 text-left text-[13px] text-ink-dark transition-colors hover:bg-[rgba(221,143,182,.1)]"
+          >
+            <span
+              // keyed on `checked` so it remounts on every toggle (check
+              // and uncheck both), restarting the pop animation each time
+              key={String(checked)}
+              className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors animate-[checkbox-pop_320ms_ease-out]"
+              style={{
+                borderColor: checked ? "#c9609a" : "rgba(154,127,107,.35)",
+                background: checked ? "#dd8fb6" : "transparent",
+              }}
+            >
+              {checked && (
+                <svg
+                  width={10}
+                  height={10}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              )}
+            </span>
+            {option}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // explore ⁄ compact toggle label — dims when inactive, brightens + lifts on hover
 function ModeButton({
   label,
@@ -85,6 +266,27 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
       // ignore — persistence is best-effort
     }
   }, [mode]);
+
+  // category/associatedTo filters — multi-select; an empty set means "no
+  // filter" for that dimension, not "show nothing"
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedAssociations, setSelectedAssociations] = useState<Set<string>>(new Set());
+
+  const categories = useMemo(() => dedupe(pieces.map((p) => p.category)), [pieces]);
+  const associations = useMemo(() => dedupe(pieces.map((p) => p.associatedTo)), [pieces]);
+
+  function toggleCategory(value: string) {
+    setSelectedCategories((prev) => toggleInSet(prev, value));
+  }
+  function toggleAssociation(value: string) {
+    setSelectedAssociations((prev) => toggleInSet(prev, value));
+  }
+
+  function pieceMatches(p: DesignPiece): boolean {
+    if (selectedCategories.size > 0 && !selectedCategories.has(p.category)) return false;
+    if (selectedAssociations.size > 0 && !selectedAssociations.has(p.associatedTo)) return false;
+    return true;
+  }
 
   // "drag to wander" hint — shown until the first real drag, then never again
   // (persisted across visits)
@@ -304,6 +506,7 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
         {layout.map((l) => {
           const p = l.piece;
           const thumb = p.images?.[0];
+          const visible = pieceMatches(p);
           return (
             <Link
               key={p.slug}
@@ -325,8 +528,15 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
                 const rt = runtime.current.get(p.slug);
                 if (rt) rt.hover = false;
               }}
+              aria-hidden={!visible}
+              tabIndex={visible ? undefined : -1}
               className="group absolute left-1/2 top-1/2 z-[1] block cursor-pointer hover:z-20 focus-visible:z-20"
-              style={{ willChange: "transform" }}
+              style={{
+                willChange: "transform",
+                opacity: visible ? 1 : 0,
+                pointerEvents: visible ? "auto" : "none",
+                transition: "opacity 400ms",
+              }}
             >
               {/* the framed piece */}
               <div className="relative rounded-[2px] bg-white p-[11px_11px_44px] shadow-[0_12px_30px_rgba(154,90,120,.16),0_2px_6px_rgba(154,90,120,.12)] transition-shadow duration-500 group-hover:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)] max-md:group-active:shadow-[0_26px_56px_rgba(154,90,120,.28),0_6px_14px_rgba(154,90,120,.16)]">
@@ -346,7 +556,7 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
                     />
                   ) : (
                     <span className="font-serif absolute inset-0 flex items-end p-3 text-[13px] italic text-[rgba(120,60,90,.4)]">
-                      {p.medium}
+                      {p.category}
                     </span>
                   )}
                 </div>
@@ -357,7 +567,7 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
                     {p.title}
                   </div>
                   <div className="font-serif truncate text-[11px] italic leading-none text-[#a37a90]">
-                    {p.medium} · {p.year}
+                    {p.category} · {p.timeframe}
                   </div>
                 </div>
               </div>
@@ -372,7 +582,7 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
           <div className="mx-auto max-w-[1180px] px-[clamp(24px,5vw,60px)] pb-[100px] pt-[132px] md:pt-[172px]">
             {/* CSS multi-column masonry — 2 cols on phones, 3 on wider screens */}
             <div className="columns-2 gap-6 md:columns-3">
-              {pieces.map((p) => {
+              {pieces.filter(pieceMatches).map((p) => {
                 const thumb = p.images?.[0];
                 return (
                 <Link
@@ -385,7 +595,15 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
                 >
                   <div
                     className="relative w-full"
-                    style={{ aspectRatio: `${p.size.w} / ${p.size.h}`, background: thumb ? undefined : p.gradient }}
+                    style={{
+                      aspectRatio: `${p.size.w} / ${p.size.h}`,
+                      // floor so banner-shaped art (very wide/short, e.g.
+                      // 480×120) still leaves enough room for the hover
+                      // caption below — normal-shaped tiles are already
+                      // taller than this and are unaffected
+                      minHeight: 160,
+                      background: thumb ? undefined : p.gradient,
+                    }}
                   >
                     {thumb && (
                       <Image
@@ -398,10 +616,17 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
                       />
                     )}
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(90,40,60,.46)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100 max-md:group-active:opacity-100">
-                    <div className="font-serif text-[20px] text-white">{p.title}</div>
-                    <div className="font-serif text-[13px] italic text-white/85">
-                      {p.medium} · {p.year}
+                  {/* uniform dark tint over the whole tile — guarantees the
+                      caption stays readable regardless of what's behind it,
+                      independent of the bottom gradient below. Absolute, so
+                      fading it in never shifts the grid. */}
+                  <div className="absolute inset-0 bg-[rgba(28,10,18,.4)] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100 max-md:group-active:opacity-100" />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(28,10,18,.82)] via-[rgba(28,10,18,.45)] to-transparent p-[18px_16px_15px] opacity-0 transition-opacity duration-[450ms] group-hover:opacity-100 max-md:group-active:opacity-100">
+                    <div className="font-serif text-[20px] text-white [text-shadow:0_1px_10px_rgba(0,0,0,.45)]">
+                      {p.title}
+                    </div>
+                    <div className="font-serif text-[13px] italic text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,.45)]">
+                      {p.category} · {p.timeframe}
                     </div>
                   </div>
                 </Link>
@@ -420,6 +645,30 @@ export function DesignGallery({ pieces }: { pieces: DesignPiece[] }) {
         <h1 className="font-serif text-[16px] italic uppercase tracking-[.2em] text-pink-deep">
           design
         </h1>
+      </div>
+
+      {/* filters — top right, fixed like the back/eyebrow block on the left */}
+      <div className="pointer-events-none absolute right-[clamp(20px,4vw,44px)] top-24 z-[21] flex items-center gap-2">
+        {(selectedCategories.size > 0 || selectedAssociations.size > 0) && (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedCategories(new Set());
+              setSelectedAssociations(new Set());
+            }}
+            className="font-serif pointer-events-auto text-[13px] italic text-ink-faint transition-opacity hover:text-pink-deep hover:opacity-80"
+          >
+            reset
+          </button>
+        )}
+        <FilterMenu
+          categoryOptions={categories}
+          selectedCategories={selectedCategories}
+          onToggleCategory={toggleCategory}
+          associationOptions={associations}
+          selectedAssociations={selectedAssociations}
+          onToggleAssociation={toggleAssociation}
+        />
       </div>
 
       {/* explore ⁄ compact toggle — bottom center */}

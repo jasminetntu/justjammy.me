@@ -1,11 +1,12 @@
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
 export const DIR = "/images/design";
 
 export const meta = {
   title: "Women in Computer Science",
-  medium: "club branding",
-  year: "2025–2026",
-  category: "de anza",
-  galleryShape: "vertical",
+  category: "Branding",
+  timeframe: "Sep 2025 – Jun 2026",
+  associatedTo: "De Anza College",
   blurb: "Directing workshops, career events, and corporate partnerships for the club — branding across the board.",
   images: [
     { src: `${DIR}/da_wics/logo_purple.png`, alt: "Women in CS logo, purple", caption: "logo" },
@@ -18,8 +19,11 @@ export const meta = {
   size: { w: 352, h: 352 },
 };
 
+<PieceHeader piece={meta} aspectRatio={{ w: 1, h: 1 }} scale={0.65} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 4, h: 5 }} />
+
 {/* Write the story here — what it is, the thinking behind it, what you learned.
     Headings become italic section titles: ## The brief / ## The process */}
 
-# Testing
-testing
+<PieceLinks links={meta.links} />

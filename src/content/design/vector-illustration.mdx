@@ -1,11 +1,12 @@
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
 export const DIR = "/images/design";
 
 export const meta = {
   title: "Vector Illustration",
-  medium: "vector art",
-  year: "2025",
-  category: "illustration",
-  galleryShape: "square",
+  category: "Vector art",
+  timeframe: "Apr – Jun 2026",
+  associatedTo: "Personal",
   blurb: "Vector studies in Adobe Illustrator — reproductions and original pieces.",
   images: [
     { src: `${DIR}/adobe_illustrator/yusaku_kamekura.png`, alt: "Yusaku Kamekura study", caption: "kamekura study" },
@@ -15,5 +16,11 @@ export const meta = {
   size: { w: 416, h: 272 },
 };
 
+<PieceHeader piece={meta} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 1, h: 1 }} />
+
 {/* Write the story here — what it is, the thinking behind it, what you learned.
     Headings become italic section titles: ## The brief / ## The process */}
+
+<PieceLinks links={meta.links} />

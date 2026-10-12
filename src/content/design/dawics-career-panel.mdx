@@ -1,11 +1,12 @@
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
 export const DIR = "/images/design";
 
 export const meta = {
   title: "WiCS Career Panel",
-  medium: "event design",
-  year: "2025–2026",
-  category: "de anza",
-  galleryShape: "vertical",
+  category: "Event design",
+  timeframe: "Apr 2026",
+  associatedTo: "De Anza College",
   blurb: "Flyer, agenda, and icon set for Women in CS's career panel event.",
   images: [
     { src: `${DIR}/da_wics/career_panel/flyer.png`, alt: "Career panel flyer", caption: "flyer" },
@@ -15,5 +16,11 @@ export const meta = {
   size: { w: 333, h: 416 },
 };
 
+<PieceHeader piece={meta} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 4, h: 5 }} />
+
 {/* Write the story here — what it is, the thinking behind it, what you learned.
     Headings become italic section titles: ## The brief / ## The process */}
+
+<PieceLinks links={meta.links} />

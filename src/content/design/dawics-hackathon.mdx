@@ -1,11 +1,12 @@
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
 export const DIR = "/images/design";
 
 export const meta = {
   title: "WiCS Hackathon",
-  medium: "event design",
-  year: "2025–2026",
-  category: "de anza",
-  galleryShape: "vertical",
+  category: "Event design",
+  timeframe: "Feb 2026",
+  associatedTo: "De Anza College",
   blurb: "Flyer, winner graphics, and participation/winner certificates for Women in CS's hackathon.",
   images: [
     { src: `${DIR}/da_wics/hackathon/flyer.png`, alt: "Hackathon flyer", caption: "flyer" },
@@ -20,5 +21,11 @@ export const meta = {
   size: { w: 333, h: 416 },
 };
 
+<PieceHeader piece={meta} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 4, h: 5 }} />
+
 {/* Write the story here — what it is, the thinking behind it, what you learned.
     Headings become italic section titles: ## The brief / ## The process */}
+
+<PieceLinks links={meta.links} />

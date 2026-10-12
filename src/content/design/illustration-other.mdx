@@ -1,11 +1,12 @@
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
 export const DIR = "/images/design";
 
 export const meta = {
   title: "Illustration — Other",
-  medium: "illustration",
-  year: "2025",
-  category: "illustration",
-  galleryShape: "horizontal",
+  category: "Illustration",
+  timeframe: "2025",
+  associatedTo: "Personal",
   blurb: "Non-human illustration work — objects, scenes, and other brands' graphics.",
   images: [
     { src: `${DIR}/illustration/space.PNG`, alt: "Space illustration" },
@@ -16,5 +17,11 @@ export const meta = {
   size: { w: 416, h: 312 },
 };
 
+<PieceHeader piece={meta} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 3, h: 2 }} />
+
 {/* Write the story here — what it is, the thinking behind it, what you learned.
     Headings become italic section titles: ## The brief / ## The process */}
+
+<PieceLinks links={meta.links} />

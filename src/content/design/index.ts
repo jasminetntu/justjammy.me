@@ -13,9 +13,9 @@
 
 import type { ComponentType } from "react";
 
-import type { DesignCategory, DesignMeta, DesignPiece } from "./types";
+import type { DesignAffiliation, DesignMeta, DesignPiece } from "./types";
 
-export type { DesignCategory, DesignImage, DesignLink, DesignPiece } from "./types";
+export type { DesignAffiliation, DesignImage, DesignLink, DesignMeta, DesignPiece } from "./types";
 
 // `meta` is `unknown` here (not `DesignMeta`) because the compiled .mdx
 // module's declared type (see src/types/mdx.d.ts) is untyped — it's cast to
@@ -23,7 +23,7 @@ export type { DesignCategory, DesignImage, DesignLink, DesignPiece } from "./typ
 type DesignModule = { meta: unknown; default: ComponentType };
 
 // import order here = display order — it drives the wall/grid layout order
-// and the category-chip order (see pieceCategories below)
+// and the affiliation-chip order (see pieceAffiliations below)
 const modules: Record<string, () => Promise<DesignModule>> = {
   dax: () => import("./dax.mdx"),
   dagdc: () => import("./dagdc.mdx"),
@@ -37,12 +37,12 @@ const modules: Record<string, () => Promise<DesignModule>> = {
   "personal-brand": () => import("./personal-brand.mdx"),
 };
 
-const CATEGORIES: DesignCategory[] = ["de anza", "illustration", "branding"];
-const REQUIRED_FIELDS = ["title", "medium", "year", "category", "blurb", "size"] as const;
+const AFFILIATIONS: DesignAffiliation[] = ["De Anza College", "Personal", "UC Irvine"];
+const REQUIRED_FIELDS = ["title", "category", "timeframe", "associatedTo", "blurb", "size"] as const;
 
 // `meta` is a plain JS export inside an .mdx file — TypeScript never checks
-// it. This is what catches a typo'd category or a missing field instead of
-// letting it fail silently (or crash deep inside a component) at render time.
+// it. This is what catches a typo'd associatedTo or a missing field instead
+// of letting it fail silently (or crash deep inside a component) at render time.
 function validatePiece(slug: string, meta: unknown): DesignPiece {
   const m = meta as Partial<DesignMeta> | undefined;
   if (!m || typeof m !== "object") {
@@ -53,9 +53,9 @@ function validatePiece(slug: string, meta: unknown): DesignPiece {
       throw new Error(`design/${slug}.mdx: meta.${field} is required`);
     }
   }
-  if (!CATEGORIES.includes(m.category as DesignCategory)) {
+  if (!AFFILIATIONS.includes(m.associatedTo as DesignAffiliation)) {
     throw new Error(
-      `design/${slug}.mdx: meta.category "${String(m.category)}" must be one of ${CATEGORIES.join(", ")}`,
+      `design/${slug}.mdx: meta.associatedTo "${String(m.associatedTo)}" must be one of ${AFFILIATIONS.join(", ")}`,
     );
   }
   return { ...m, slug } as DesignPiece;
@@ -82,10 +82,10 @@ export async function getPiece(slug: string): Promise<{ piece: DesignPiece; Body
 
 // filter options derived from a resolved pieces list (order preserved), so
 // the chip bar stays in sync with the data
-export function pieceCategories(pieces: DesignPiece[]): Array<"all" | DesignCategory> {
-  const seen: DesignCategory[] = [];
+export function pieceAffiliations(pieces: DesignPiece[]): Array<"all" | DesignAffiliation> {
+  const seen: DesignAffiliation[] = [];
   for (const p of pieces) {
-    if (!seen.includes(p.category)) seen.push(p.category);
+    if (!seen.includes(p.associatedTo)) seen.push(p.associatedTo);
   }
   return ["all", ...seen];
 }

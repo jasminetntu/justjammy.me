@@ -16,6 +16,14 @@ const SHADOW = {
 // that space (equal gap above/below) instead of eyeballing a bottom offset
 const CAPTION_BAND = 26;
 
+// horizontal padding (p-2, each side) around the image — subtracted from
+// the outer card's width previously, which silently narrowed the rendered
+// image below the caller's intended `width`/`height` ratio by a fixed 16px
+// (barely visible at ~260px wide, obviously wrong at small sizes/scales).
+// The button's own width now adds this back on top of `width`, so `width`×
+// `height` always describes the image itself, exactly.
+const PAD_X = 8;
+
 interface PolaroidFrameProps {
   image: GalleryImage;
   rotate?: number; // degrees; omit (or tilted=false upstream) for a straight frame
@@ -45,12 +53,12 @@ export function PolaroidFrame({
       type="button"
       onClick={onClick}
       className={`group relative shrink-0 rounded-[4px] bg-white p-2 transition-[transform,width] duration-300 ${SHADOW[shadow]} ${onClick ? "cursor-zoom-in hover:scale-[1.03] max-md:active:scale-[1.03]" : ""} ${className}`}
-      style={{ width, paddingBottom: CAPTION_BAND, transform: rotate ? `rotate(${rotate}deg)` : undefined }}
+      style={{ width: width + PAD_X * 2, paddingBottom: CAPTION_BAND, transform: rotate ? `rotate(${rotate}deg)` : undefined }}
       disabled={!onClick}
     >
       <div
         className="relative overflow-hidden bg-[rgba(0,0,0,.04)] transition-[height] duration-300"
-        style={{ height }}
+        style={{ width, height }}
       >
         <Image
           src={image.src}
@@ -63,7 +71,7 @@ export function PolaroidFrame({
       </div>
       {hasCaption && (
         <div
-          className="font-script absolute inset-x-0 bottom-0 flex items-center justify-center text-center text-[16px] text-[#7a6a58]"
+          className="absolute inset-x-0 bottom-0 flex items-center justify-center text-center text-[13px] text-[#7a6a58]"
           style={{ height: CAPTION_BAND }}
         >
           {image.caption}

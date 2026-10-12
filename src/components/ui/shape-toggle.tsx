@@ -8,13 +8,19 @@ export type FrameShape = "square" | "horizontal" | "vertical";
 const VERTICAL_RATIO = 4 / 5;
 
 // shared width/height resolution so the carousel and card stack size their
-// frames identically for a given shape
+// frames identically for a given shape. "horizontal" is an exact passthrough
+// (not a reorder-to-landscape) so a caller that already computed its own
+// width/height — portrait included — gets exactly that back.
 export function resolveFrameSize(shape: FrameShape, frameWidth: number, frameHeight: number) {
-  const longSide = Math.max(frameWidth, frameHeight);
-  const shortSide = Math.min(frameWidth, frameHeight);
-  if (shape === "square") return { width: longSide, height: longSide };
-  if (shape === "vertical") return { width: Math.round(longSide * VERTICAL_RATIO), height: longSide };
-  return { width: longSide, height: shortSide };
+  if (shape === "square") {
+    const side = Math.max(frameWidth, frameHeight);
+    return { width: side, height: side };
+  }
+  if (shape === "vertical") {
+    const longSide = Math.max(frameWidth, frameHeight);
+    return { width: Math.round(longSide * VERTICAL_RATIO), height: longSide };
+  }
+  return { width: frameWidth, height: frameHeight };
 }
 
 interface ShapeToggleProps {

@@ -93,9 +93,9 @@ At the top of the file, export a `meta` object.
 ```mdx
 export const meta = {
   title: "Poster for X",
-  medium: "poster",              // small label, e.g. "poster", "portrait"
-  year: "2025",
-  category: "de anza",           // one of: "de anza" | "illustration" | "branding"
+  category: "Poster",             // the type of work — any label, e.g. "Poster", "Illustration"
+  timeframe: "Feb 2026",          // or a range: "Sep 2025 – Jun 2026"
+  associatedTo: "De Anza College", // who/what it's for — one of: "De Anza College" | "Personal" | "UC Irvine"
   blurb: "One line about the piece.",
   images: [                      // first image is the wall/grid thumbnail;
     { src: "/images/design/my-piece/art.jpg", alt: "short description", caption: "optional" },
@@ -105,22 +105,68 @@ export const meta = {
 };
 ```
 
-> **Tip — no cropping:** set `size` to your thumbnail image's actual width:height ratio (e.g. open it and check its pixel dimensions). It sizes both the draggable-wall polaroid *and* the compact-grid tile, so getting the ratio right means neither view crops the image oddly. Want a specific shape (square / horizontal / vertical) for the detail-page carousel regardless of the source images? Add `galleryShape: "square"` (or `"horizontal"` / `"vertical"`).
+> **Tip — no cropping:** set `size` to your thumbnail image's actual width:height ratio (e.g. open it and check its pixel dimensions). It sizes both the draggable-wall polaroid *and* the compact-grid tile, so getting the ratio right means neither view crops the image oddly. (The detail-page carousel's shape is set separately, in Step 2 — see `<PieceCarousel />` below.)
 
-### Step 2 — write the story (optional)
+### Step 2 — lay out the page
 
-Below the `meta` export, write in Markdown, same as a project's case study:
+Unlike a project, a design piece's detail page has **no fixed template** —
+whatever you put below the `meta` export, in whatever order, is the entire
+page. Three ready-made pieces are available to import and place:
+
+- `<PieceHeader piece={meta} />` — the title/blurb + tilted first-image print.
+  Don't want the print? `<PieceHeader piece={meta} showImage={false} />`
+  drops it — title/blurb only.
+- `<PieceCarousel images={...} />` — the browsable carousel.
+- `<PieceLinks links={meta.links} />` — the external-links row (renders nothing if `meta.links` is unset)
+
+`PieceHeader` and `PieceCarousel` both take the same two optional sizing props:
+
+- `aspectRatio` — a `{ w, h }` pair written the way you'd think of a real
+  format, e.g. `{ w: 1080, h: 1080 }` (square), `{ w: 1080, h: 1350 }` (4:5
+  portrait), `{ w: 1920, h: 1080 }` (16:9). Only the ratio between `w` and
+  `h` matters, not their size — `{ w: 4, h: 5 }` and `{ w: 1080, h: 1350 }`
+  render identically. Defaults to a landscape-ish square-adjacent shape if
+  omitted.
+- `scale` — a plain multiplier (default `1`) that resizes the whole thing
+  up or down, independent of `aspectRatio`. `scale={1.5}` is 50% bigger;
+  `scale={0.75}` is 25% smaller.
 
 ```mdx
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 4, h: 5 }} scale={1.2} />
+```
+
+Each call sizes itself independently — no shared default to fight with,
+and nothing stops a piece from using `<PieceCarousel />` more than once at
+different sizes.
+
+The usual layout (copy this to start):
+
+```mdx
+import { PieceCarousel, PieceHeader, PieceLinks } from "@/components/sections/piece-detail";
+
+export const meta = { /* … from Step 1 … */ };
+
+<PieceHeader piece={meta} />
+
+<PieceCarousel images={meta.images?.slice(1) ?? []} aspectRatio={{ w: 4, h: 5 }} />
+
 ## The brief
 What it is and the thinking behind it.
 
 ## The process
 The interesting parts. **Bold**, images, and lists all work.
+
+<PieceLinks links={meta.links} />
 ```
 
-No write-up yet? Leave it out — the file can be just the `meta` export; the
-piece's detail page won't show a write-up section until you add one.
+Want the carousel above the header, or the write-up split around it? Just
+move the `<PieceCarousel .../>` line. Each piece's layout is independent —
+nothing here is shared with any other piece's page.
+
+> **Heads up:** there's no fallback layout. If you skip `<PieceHeader .../>`
+> the page simply won't show a title; skip `<PieceCarousel .../>` and the
+> rest of the images never appear. Start from the template above and move
+> things from there rather than deleting first.
 
 ### Step 3 — register the file
 
@@ -140,9 +186,10 @@ Leave off `images` and set `gradient` to any CSS gradient string, e.g.
 You don't place pieces on the wall — positions are automatic and never overlap.
 
 ✅ **Checklist:** image(s) in `public/images/design/<slug>/` → `my-piece.mdx` with
-a `meta` export (+ optional write-up) → one line in `index.ts`'s `modules` map.
+a `meta` export + the page layout (`PieceHeader`/`PieceCarousel`/`PieceLinks` +
+write-up) → one line in `index.ts`'s `modules` map.
 
-> **Heads up:** `meta` is plain JS, not type-checked by the editor. A typo'd field name, a missing required field, or a `category` that isn't one of the three listed won't show a red squiggle — but it *will* throw a clear error the next time you run `npm run dev` or `npm run build`, naming the exact file and field.
+> **Heads up:** `meta` is plain JS, not type-checked by the editor. A typo'd field name, a missing required field, or an `associatedTo` that isn't one of the three listed won't show a red squiggle — but it *will* throw a clear error the next time you run `npm run dev` or `npm run build`, naming the exact file and field.
 
 ---
 

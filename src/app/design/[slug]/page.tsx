@@ -31,5 +31,5 @@ export default async function PiecePage({ params }: Params) {
   const resolved = await getPiece(slug);
   if (!resolved) notFound();
 
-  return <PieceDetail piece={resolved.piece} Body={resolved.Body} />;
+  return <PieceDetail Body={resolved.Body} />;
 }
